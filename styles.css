@@ -1084,3 +1084,24 @@ section {
     cursor: grabbing;
   }
   
+
+/* Highlight the picked-up floating clone */
+.skill-drag-clone.picked-up {
+  /* reuse your accent glow without changing position */
+  box-shadow: 0 0 40px var(--accent), 0 0 12px rgba(255,255,255,0.25);
+}
+
+/* While dragging: turn OFF all card hovers/motions for the page */
+body.dragging-skill .img-background-card,
+body.dragging-skill .card {
+  pointer-events: none;               /* kills hover/click on other tiles */
+}
+
+/* Defensive: neutralize hover-driven transforms/animations just in case */
+body.dragging-skill .img-background-card:hover,
+body.dragging-skill .img-background-card:focus-visible,
+body.dragging-skill .card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
