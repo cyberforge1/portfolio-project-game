@@ -650,6 +650,76 @@ section {
 
 /* SKILLS SECTION BACKGROUND IMAGES */
 
+
+.img-background-card {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.img-background-card::before {
+  content: none !important;
+}
+
+.img-background-card:hover {
+  z-index: 10;
+}
+
+.img-background-card:hover,
+.img-background-card:focus-visible {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(225, 228, 232, 0.5);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-background-card,
+  .img-background-card:hover,
+  .img-background-card:focus-visible {
+    transition: none;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+
+.img-background-card {
+  --accent: rgba(225, 228, 232, 0.6);
+  border: 4px solid var(--accent);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.img-background-card:hover,
+.img-background-card:focus-visible {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px var(--accent);
+  outline: none;
+}
+
+
+.html-card { --accent: #FFA726; }
+.css-card     { --accent: #264de4; }
+.git-card     { --accent: #f14e32; }
+.scss-card    { --accent: #cc6699; }
+.js-card      { --accent: #f7df1e; }
+.react-card   { --accent: #61dafb; }
+.node-card    { --accent: #3c873a; }
+.openai-card  { --accent: #10a37f; }
+.python-card  { --accent: #3776ab; }
+.java-card { --accent: #E76F00; }
+.spring-card  { --accent: #6db33f; }
+.docker-card { --accent: #0db7ed; }
+.mongodb-card { --accent: #13aa52; }
+.firebase-card  { --accent: #FFB300; }
+.aws-card     { --accent: #ffd60a; }
+.sql-card     { --accent: #4db6ac; }
+
+
+/* Old paint-splatter functionality */
+
+
+/*
+
 .img-background-card {
   position: relative;
   z-index: 1;
@@ -668,6 +738,15 @@ section {
   z-index: -1;
   pointer-events: none;
 }
+
+.img-background-card:hover {
+  z-index: 10;
+}
+
+.img-background-card:hover::before {
+  transform: translateX(-50%) scale(1);
+}
+*/
 
 
 .html-card::before {
@@ -706,7 +785,7 @@ section {
   background: url('./static/paint-splatters/python.png') no-repeat center center;
 }
 
-.django-card::before {
+.docker-card::before {
   background: url('./static/paint-splatters/django.png') no-repeat center center;
 }
 
@@ -734,14 +813,6 @@ section {
   background: url('./static/paint-splatters/sql.png') no-repeat center center;
 }
 
-
-.img-background-card:hover {
-  z-index: 10;
-}
-
-.img-background-card:hover::before {
-  transform: translateX(-50%) scale(1);
-}
 
 .card-body {
   display: flex;
