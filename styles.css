@@ -1031,6 +1031,14 @@ section {
 }
 
 
+
+
+
+
+
+
+
+
 /* --- Skill Tile Game Overlay --- */
 #skill-game-zone {
   position: absolute;        /* spans document coords */
@@ -1048,8 +1056,9 @@ section {
 }
 
 .skill-original-ghost {
-  opacity: 0.25;             /* dim the original while "picked up" */
-  transition: opacity 0.15s ease;
+  opacity: 0;                /* make original completely invisible */
+  visibility: hidden;        /* ensure it doesn’t interfere visually */
+  transition: none;          /* optional: remove fading delay */
 }
 
 body.dragging-skill {

@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
       zone.appendChild(clone);
       card.classList.add('skill-original-ghost');
       document.body.classList.add('dragging-skill');
+
   
       // Positioning constrained to zone
       function positionClone(pageX, pageY) {
