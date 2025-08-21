@@ -1,0 +1,54 @@
+HTML -
+
+E54B20
+F26524
+
+
+CSS - 
+#35A8DB
+#1472B6
+
+GIT -
+F05033
+
+SCSS - 
+#FF99CC
+#CE649B
+
+Javascript - 
+#F7DF18
+
+React.js - 
+#87E9FF
+
+Node.js
+#24B35D
+
+OpenAI Api -
+#FFFFFF
+
+Python -
+#3979AB
+
+Django
+#113E2E
+
+Java
+#F49633
+#5582A1
+
+
+Spring Boot
+#69BC4A
+
+MongoDB
+#00ED64
+
+FireStore
+#FFCC31
+
+AWS
+#F8981C
+
+SQL
+#016089

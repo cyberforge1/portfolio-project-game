@@ -1,0 +1,552 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-oHDEc8XedljfX9rWegF6VsXKk7P2GxHR/AcqI1NgK3aYZ9Vf3RxT+vGbHET2JbeW2K18YJ2fVbnhl6w3RJYlbg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js" defer></script>
+    <script src="./scripts.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/f6ed034d6e.js" crossorigin="anonymous" defer></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="./static/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./static/favicon/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="./static/favicon/apple-touch-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&family=Montserrat:wght@100;300;400;700;900&family=Open+Sans:wght@300;400;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse text-right justify-content-center custom-navbar-collapse" id="navbarNav">
+            <div class="col-md-8">
+                <ul class="navbar-nav justify-content-around">
+                    <li class="nav-item">
+                        <a class="nav-link text-color-one icon-illuminate" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link color-three icon-illuminate" href="#projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link color-two icon-illuminate" href="#skills">Skills</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link color-four icon-illuminate" href="#about">About Me</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link color-five icon-illuminate" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+    <div id="home" class="anchor"></div>
+    <!-- LANDING PAGE -->
+<section id='home' id="firstPage" class="first_page flex-elements">
+    <div class="black-overlay"></div>
+    <div class="col-12 container">
+        <div class="row container">
+            <div class="col-md-6 container d-flex justify-content-center align-items-center profile-picture-container">
+                <div class="rounded-circle test overflow-hidden" style="width: 250px; height: 250px;">
+                    <img src="./static/headshots/headshot.jpg" alt="My Headshot" class="img-fluid" style="width: 250px; height: 250px;">
+                </div>
+            </div>
+            <div class="col-12 text-container">
+                <h1 id='nameTitle' class="title-text-color-one constant-illuminate">Oliver Jenkins</h1>
+            </div>
+        </div>
+        <div class="row container">
+            <div class="col-10 container">
+                <h4 id='jobTitle' class="title-text-color-two constant-illuminate">Software Engineer | Scientist</h4>
+            </div>
+        </div>
+
+        <!-- Social Icons Section -->
+    <div class="container">
+        <div id="mediaTitle" class="row justify-content-center">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="d-flex justify-content-around social-icons-container">
+                    <a href="https://www.linkedin.com/in/obj809/" target="_blank">
+                        <div class="icon-container icon-illuminate">
+                            <i class="fa-brands fa-linkedin fa-2x icon-black"></i>
+                        </div>
+                    </a>
+                    <a href="https://github.com/cyberforge1" target="_blank">
+                        <div class="icon-container icon-illuminate">
+                            <i class="fab fa-github-square fa-2x icon-black"></i>
+                        </div>
+                    </a>
+                    <a href="https://x.com/CyberForge01" target="_blank">
+                        <div class="icon-container disabled icon-illuminate">
+                            <i class="fa-brands fa-square-x-twitter fa-2x icon-black"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <div id="projects" class="anchor"></div>
+
+
+
+<!-- PROJECT PAGE -->
+<section id="projects" class="third_page flex-elements">
+    <div class="container project-title">
+        <div class="row project-div">
+            <div id="projectTitle">
+                <p class="section-title" id="typed-project-title"><i>Project Portfolio</i></p>
+            </div>
+        </div>
+
+        <div class="row project-div">
+            <!-- PoetryGPT - TypeScript & Python Project -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/poetryGPT" target="_blank" class="project-link"><span class="text-color-five">PoetryGPT</span> - TypeScript React & Python Project</a></i></h5>
+                    <br>
+                    <p>A project that automates the training of a finely-tuned ChatGPT model with scripting and custom-generated data.</p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/poetryGPT" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://poetry-gpt.netlify.app/" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://poetry-gpt.netlify.app/" target="_blank">
+                    <img src="./static/project-photos/poetry-gpt.png" alt="Fine Tuned ChatGPT" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+        <div class="row project-div">
+            <!-- React E-commerce Store - React & Firestore Project -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/react-ecommerce-store" target="_blank" class="project-link"><span class="text-color-four">React E-commerce Store</span> - React & Firestore Project</a></i></h5>
+                    <br>
+                    <p>An e-commerce store for alpine clothing and equipment, built with React, Google Firestore, React Router, SCSS, and Midjourney AI.</p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/react-ecommerce-store" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://react-ecommerce-store-project.netlify.app/" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://react-ecommerce-store-project.netlify.app/" target="_blank">
+                    <img src="./project-screenshots/non-compressed/summit-shop-screenshot.png" alt="React E-commerce Store" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+
+        <div class="row project-div">
+            <!-- Sydney Dam Monitoring - Automated Data Collection & Analysis -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/SydneyDamMonitoring" target="_blank" class="project-link"><span class="text-color-one">Sydney Dam Monitoring</span> - Data Collection & Analysis</a></i></h5>
+                    <br>
+                    <p>A data dashboard application that collects and analyzes real-time data about dams in NSW, created with a Flask API, TypeScript React, PySpark, AWS RDS, S3, Lambda, and Docker.
+                    </p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/SydneyDamMonitoring" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://github.com/cyberforge1/SydneyDamMonitoring" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://github.com/cyberforge1/SydneyDamMonitoring" target="_blank">
+                    <img src="./project-screenshots/non-compressed/sydney-dam-monitoring.png" alt="Sydney Dam Monitoring" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+        <div class="row project-div">
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/imageForge" target="_blank" class="project-link"><span class="text-color-three">imageForge</span> - Django Project</a></i></h5>
+                    <br>
+                    <p>A full-stack Django application for generating unique artwork using the ChatGPT 3.5 Turbo and DALL-E 2 models.</p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/imageForge" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://github.com/cyberforge1/imageForgeGithub" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://github.com/cyberforge1/imageForgeGithub" target="_blank">
+                    <img src="./static/project-photos/imageforge.png" alt="imageForge Django App" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+
+        
+
+        <div class="row project-div">
+            <!-- Task Tracker - Spring Boot & TypeScript React -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/task-tracker-full-stack" target="_blank" class="project-link"><span class="text-color-four">Task Tracker</span> - Spring Boot & TypeScript React</a></i></h5>
+                    <br>
+                    <p>A full-stack task-tracking application with complete CRUD functionality. Built with a Spring Boot API, a TypeScript React UI, MySQL, SCSS, Log4j, JUnit, and Spring Swagger.
+                    </p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/task-tracker-full-stack" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://github.com/cyberforge1/task-tracker-full-stack" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://github.com/cyberforge1/task-tracker-full-stack" target="_blank">
+                    <img src="./static/project-photos/task-tracker.png" alt="Task Tracker" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+        <div class="row project-div">
+            <!-- Employee Creator - Spring Boot & TypeScript React -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/employee-creator-full-stack" target="_blank" class="project-link"><span class="text-color-two">Employee Creator</span> - Spring Boot & TypeScript React</a></i></h5>
+                    <br>
+                    <p>A full-stack employee management application with comprehensive CRUD functionality. Developed with a Spring Boot API, a TypeScript React UI, MySQL, Redux, Tailwind CSS, Log4j, JUnit, and Axios.
+                    </p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/employee-creator-full-stack" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://github.com/cyberforge1/employee-creator-full-stack" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://github.com/cyberforge1/employee-creator-full-stack" target="_blank">
+                    <img src="./project-screenshots/non-compressed/employee-creator-screenshot.png" alt="Employee Creator" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+
+
+        <div class="row project-div">
+            <!-- AWS ETL Pipeline -->
+            <div class="col-md-6 col-12 container order-md-1 d-flex align-items-center justify-content-center project-text-div">
+                <div>
+                    <br>
+                    <br>
+                    <br>
+                    <h5><i><a href="https://github.com/cyberforge1/aws-etl-pipeline" target="_blank" class="project-link"><span class="text-color-five">Serverless ETL Pipeline</span> - AWS Cloud Project</a></i></h5>
+                    <br>
+                    <p>A serverless ETL pipeline powered by AWS services for automated data extraction, transformation, and loading. Built with S3, Lambda, Glue, EventBridge, SNS, SQS, Terraform, and Python.
+                    </p>
+                    <br>
+                    <div class="project-icons">
+                        <a href="https://github.com/cyberforge1/aws-etl-pipeline" target="_blank">
+                            <div class="icon-container hover-icon-highlight"><i class="fab fa-github-square fa-2x icon-illuminate"></i></div>
+                        </a>
+                        <a href="https://github.com/cyberforge1/aws-etl-pipeline" target="_blank">
+                            <div class="icon-container hover-icon-highlight">
+                                <i class="fa-solid fa-link fa-2x icon-illuminate"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 container order-md-2">
+                <a href="https://github.com/cyberforge1/aws-etl-pipeline" target="_blank">
+                    <img src="./project-screenshots/non-compressed/aws-etl-pipeline.png" alt="AWS Cloud Pipeline" class="img-fluid img-rounded image-container">
+                </a>
+            </div>
+        </div>
+    
+
+    </div>
+</section>
+
+<div id="skills" class="anchor"></div>
+
+
+
+<!-- SKILLS PAGE -->
+<section id='skills' class="second_page flex-elements">
+    <div class="container skill-cards-container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="section-title" id="typed-skills-title"><i>Software Skills</i></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card html-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fab fa-html5 fa-4x"></i>
+                        <p class="mt-3">HTML5</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card css-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-css3-alt fa-4x"></i>
+                        <p class="mt-3">CSS3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card git-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-square-git fa-4x"></i>
+                        <p class="mt-3">Git</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card scss-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-sass fa-4x"></i>
+                        <p class="mt-3">SCSS/Sass</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card js-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-js fa-4x"></i>
+                        <p class="mt-3">JavaScript</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card react-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-react fa-4x"></i>
+                        <p class="mt-3">React.js</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card node-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-node-js fa-4x"></i>
+                        <p class="mt-3">Node.js</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card openai-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <img src="./static/icons/openai-icon.svg" alt="Image" style="width: 64px; height: 64px;">
+                        <p class="mt-3">OpenAI API</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card python-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-python fa-4x"></i>
+                        <p class="mt-3">Python</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card java-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-java fa-4x"></i>
+                        <p class="mt-3">Java</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card spring-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-solid fa-leaf fa-4x"></i>
+                        <p class="mt-3">Spring Boot</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card django-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-docker fa-4x"></i>
+                        <p class="mt-3">Docker</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card mongodb-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <img src="./static/icons/mongodb-icon2.svg" alt="Image" style="width: 64px; height: 64px;">
+                        <p class="mt-3">MongoDB</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card firebase-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-google fa-4x"></i>
+                        <p class="mt-3">Firebase & Firestore</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card aws-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-brands fa-aws fa-4x"></i>
+                        <p class="mt-3">AWS</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card img-background-card sql-card border">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <i class="fa-solid fa-database fa-4x"></i>
+                        <p class="mt-3">SQL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <div id="about" class="anchor"></div>
+
+
+
+    <!-- ABOUT ME PAGE -->
+    <section id='about' id="fourthPage" class="fourth_page flex-elements">
+        <div class="col-12 container flex-box">
+            <div class="row container">
+                <div class="col-md-12 about-container">
+                    <br>
+                    <div class="col-md-12">
+                        <h2><i><span id="typed-text" class="auto-type"></span></i></h2>
+                    </div>
+                    <br/>
+                    <p class="larger-font">I'm a Sydney-based <span class="text-color-two">software engineer</span>, who is passionate about <span class="text-color-one">learning</span> and <span class="text-color-three">working</span> with technology.</p>
+                    <p class="larger-font">A <span class="text-color-one">conscientious</span> and <span class="text-color-three">collaborative</span> team player, with a background in <span class="text-color-one">microbiology</span>, committed to <span class="text-color-one">continuous learning</span> and <span class="text-color-three">professional growth</span>.</p>
+                    <p class="larger-font">I greatly enjoy building <span class="text-color-two">software projects</span> with modern tools and solving <span class="text-color-four">logical problems</span> with a creative approach.</p>
+                    <p class="larger-font">Seeking to apply <span class="text-color-one">technical</span> and <span class="text-color-three">analytical</span> expertise to contribute to innovative <span class="text-color-two">software solutions</span>.</p>
+                    <p class="larger-font">Beyond the <span class="text-color-four">world of code</span>, my interests include <span class="text-color-one">filmmaking</span>, exploring <span class="text-color-two">natural settings</span> and searching for new <span class="text-color-three">adventures</span>.</p>
+                    <p class="larger-font">
+                        Contact me at <span class="text-color-one">obj809@gmail.com</span>, connect with me on 
+                        <a href="https://www.linkedin.com/in/obj809/" class="text-color-two no-underline" target="_blank">LinkedIn</a>, or visit my 
+                        <a href="https://github.com/cyberforge1" class="text-color-three no-underline" target="_blank">Github</a>.
+                    </p>
+                    <br>
+                </div>
+            </div>
+            <div>
+            <div class="row interest-container">
+                <div class="col-md-12">
+                    <h3><i><span id="typed-text" class="auto-type"></span></i></h3>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+    </section>
+
+<!-- CONTACT PAGE -->
+<section id='contact' id="fifthPage" class="fifth_page flex-elements">
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="text-center contact-spacing">
+                    <h2 class="contact-header"><span>Contact Me</span></h2>
+                </div>
+            </div>
+        </div>
+        <div class="icon-spacing-2"></div>
+        <div class="row justify-content-center contact-icons-container">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="d-flex justify-content-around">
+                    <a href="https://www.linkedin.com/in/obj809/" target="_blank">
+                        <div class="icon-container icon-illuminate">
+                            <i class="fa-brands fa-linkedin fa-2x"></i>
+                        </div>
+                    </a>
+                    <a href="https://github.com/cyberforge1" target="_blank">
+                        <div class="icon-container icon-illuminate">
+                            <i class="fab fa-github-square fa-2x"></i>
+                        </div>
+                    </a>
+                    <a href="https://x.com/CyberForge01" target="_blank">
+                        <div class="icon-container icon-illuminate">
+                            <i class="fa-brands fa-square-x-twitter fa-2x"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- FOOTER -->
+        <footer>
+            <div class="col-12 bg-secondary footer text-white py-3 ">
+                <div class="text-center ">
+                <div><i>Created by Oliver Jenkins © 2024</i></div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+
+
