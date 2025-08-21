@@ -1039,29 +1039,48 @@ section {
 
 
 
-/* --- Skill Tile Game Overlay --- */
-#skill-game-zone {
-  position: absolute;        /* spans document coords */
-  left: 0;
-  width: 100%;
-  pointer-events: none;      /* allow page to ignore unless dragging */
-  z-index: 9999;             /* float above content */
-}
 
-.skill-drag-clone {
-  position: absolute;
-  pointer-events: none;
-  will-change: transform;
-  transform: translate3d(0,0,0);
-}
 
-.skill-original-ghost {
-  opacity: 0;                /* make original completely invisible */
-  visibility: hidden;        /* ensure it doesn’t interfere visually */
-  transition: none;          /* optional: remove fading delay */
-}
 
-body.dragging-skill {
-  user-select: none;         /* no text selection while dragging */
-  cursor: grabbing;
-}
+
+
+
+/* ============================
+   Skill Tile Drag Game (APPEND)
+   ============================ */
+
+   #skill-game-zone {
+    position: absolute;   /* document-coord overlay */
+    left: 0;
+    width: 100%;
+    pointer-events: none; /* overlay ignores input */
+    z-index: 9999;        /* above page chrome */
+  }
+  
+  .skill-drag-clone {
+    position: absolute;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate3d(0,0,0);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    border-radius: 6px;
+    transition: none !important;   /* zero extra motion */
+    animation: none !important;
+  }
+  
+  .skill-drag-clone * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .skill-original-ghost {
+    opacity: 0;                 /* fully invisible while picked up */
+    visibility: hidden;         /* ensure no flicker */
+    transition: none;           /* no fade delay */
+  }
+  
+  body.dragging-skill {
+    user-select: none;          /* prevent text selection */
+    cursor: grabbing;
+  }
+  

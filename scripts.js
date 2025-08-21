@@ -195,8 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-
-
 /* ============================================
    Skill Tile Drag Game (APPEND / SELF-CONTAINED)
    ============================================ */
@@ -242,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return zone;
     }
   
-    // Utilities
+    // Helpers
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
   
     // Drag state
@@ -250,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
   
     function onCardMouseDown(e) {
       if (e.button !== 0) return; // left-click only
+      e.preventDefault();         // avoid native image/text drag
+  
       const card = e.currentTarget;
   
       const bounds = computeGameBounds();
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
       const zone = ensureGameZone(bounds);
   
-      // Source rect to size the clone
+      // Source rect to size the clone and compute initial offsets
       const srcRect = card.getBoundingClientRect();
   
       // Create floating clone
@@ -266,19 +266,31 @@ document.addEventListener('DOMContentLoaded', function () {
       clone.style.width = srcRect.width + 'px';
       clone.style.height = srcRect.height + 'px';
   
-      // Offset inside the card where the user clicked
+      // Attach to overlay & hide original
+      zone.appendChild(clone);
+      card.classList.add('skill-original-ghost');
+      document.body.classList.add('dragging-skill');
+  
+      // Place the clone exactly where the original card sits (in zone-local coords)
+      function placeAtOriginal() {
+        const zoneRect = zone.getBoundingClientRect();
+        const zoneLeft = zoneRect.left + window.scrollX;
+        const zoneTop  = zoneRect.top + window.scrollY;
+  
+        const localLeft = srcRect.left + window.scrollX - zoneLeft;
+        const localTop  = srcRect.top + window.scrollY - zoneTop;
+  
+        clone.style.transform = `translate(${localLeft}px, ${localTop}px)`;
+      }
+      placeAtOriginal();
+  
+      // Offset inside the card where the user clicked (preserve the grab point)
       const startPageX = e.pageX;
       const startPageY = e.pageY;
       const offsetX = startPageX - (srcRect.left + window.scrollX);
       const offsetY = startPageY - (srcRect.top + window.scrollY);
   
-      // Attach to overlay
-      zone.appendChild(clone);
-      card.classList.add('skill-original-ghost');
-      document.body.classList.add('dragging-skill');
-
-  
-      // Positioning constrained to zone
+      // Constrained positioning during drag
       function positionClone(pageX, pageY) {
         const zoneRect = zone.getBoundingClientRect();
         const zoneLeft   = zoneRect.left + window.scrollX;
@@ -302,13 +314,8 @@ document.addEventListener('DOMContentLoaded', function () {
         clone.style.transform = `translate(${localLeft}px, ${localTop}px)`;
       }
   
-      // Seed initial position
-      positionClone(startPageX, startPageY);
-  
-      // Save drag state
+      // Save drag state & listeners
       drag = { card, clone, zone, positionClone };
-  
-      // Global listeners
       window.addEventListener('mousemove', onMouseMove, { passive: true });
       window.addEventListener('mouseup', onMouseUp, { once: true });
     }
@@ -340,6 +347,7 @@ document.addEventListener('DOMContentLoaded', function () {
       root.querySelectorAll('.img-background-card').forEach((el) => {
         if (!el.__skillDragBound) {
           el.addEventListener('mousedown', onCardMouseDown);
+          el.addEventListener('dragstart', (ev) => ev.preventDefault()); // guard
           el.__skillDragBound = true;
         }
       });
@@ -350,13 +358,12 @@ document.addEventListener('DOMContentLoaded', function () {
       bindSkillCards();
     });
   
-    // Keep overlay aligned on resize
+    // Keep overlay aligned on resize (if dragging)
     window.addEventListener('resize', () => {
       if (!drag) return;
       const bounds = computeGameBounds();
       if (!bounds) return;
-      const zone = ensureGameZone(bounds);
-      drag.zone = zone;
+      ensureGameZone(bounds);
     });
   })();
   
