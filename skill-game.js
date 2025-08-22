@@ -6,25 +6,22 @@
    ========================================================== */
    (function () {
     // -------- Config --------
-    const MIN_WIDTH = 768;     // enable on small tablets and up
-    const BOUNCE_WALL = 0.85;  // wall restitution (0..1)
-    const BOUNCE_TILE = 0.92;  // tile-vs-tile restitution (0..1)
-    const FRICTION = 0.995;    // per-tick damping for moving tiles
-    const MAX_DT = 1 / 30;     // clamp big frame gaps (s)
-    const KICK_SCALE = 1.1;    // scale the drag velocity imparted to other tiles
-    const MIN_KICK = 120;      // px/s, minimum impulse when drag is very slow
+    const MIN_WIDTH = 768;
+    const BOUNCE_WALL = 0.85;
+    const BOUNCE_TILE = 0.92;
+    const FRICTION = 0.995;
+    const MAX_DT = 1 / 30;
+    const KICK_SCALE = 1.1;
+    const MIN_KICK = 120;
   
-    const THROW_SCALE      = 1.0;   // multiply the captured drag speed
-    const THROW_MIN_SPEED  = 80;    // px/s; below this, treat as a “drop”
-    const THROW_MAX_SPEED  = 2000;  // px/s; clamp to avoid crazy spikes
+    const THROW_SCALE      = 1.0;
+    const THROW_MIN_SPEED  = 80;
+    const THROW_MAX_SPEED  = 2000;
   
     const isGameEnabled = () => window.innerWidth >= MIN_WIDTH;
   
-    // -------- DOM helpers --------
     const getSectionById = (id) => document.querySelector(`section#${id}`) || null;
   
-    // Make the game area span from the top of <section id="projects">
-    // down to the bottom of <section id="skills">
     function computeGameBounds() {
       const projects = document.querySelector("section#projects");
       const skills   = document.querySelector("section#skills");
@@ -32,7 +29,7 @@
   
       const projTop    = projects.getBoundingClientRect().top + window.scrollY;
       const skillsRect = skills.getBoundingClientRect();
-      const skillsBot  = skillsRect.bottom + window.scrollY; // top + height
+      const skillsBot  = skillsRect.bottom + window.scrollY;
   
       return {
         top: projTop,
@@ -55,7 +52,6 @@
     }
   
     function ensureGameZone(bounds) {
-      // Defensive: only one zone
       const zones = document.querySelectorAll("#skill-game-zone");
       zones.forEach((z, idx) => { if (idx > 0) z.remove(); });
   
@@ -70,13 +66,12 @@
       zone.style.top      = bounds.top + "px";
       zone.style.height   = bounds.height + "px";
       zone.style.width    = document.documentElement.clientWidth + "px";
-      zone.style.overflow = "hidden";      // clip contents
-      zone.style.pointerEvents = "auto";   // let clicks hit clones
+      zone.style.overflow = "hidden";
+      zone.style.pointerEvents = "auto";
       ensureBoundsOverlay(zone);
       return zone;
     }
   
-    // Snapshot original cards BEFORE any DOM change (page coordinates)
     function snapshotOriginalRects(cards) {
       return cards.map(card => {
         const r = card.getBoundingClientRect();
@@ -117,31 +112,25 @@
       clone.style.boxSizing = "border-box";
     }
   
-    // ---- Flash throttling (1 flash max per tile per second) ----
     const FLASH_COOLDOWN_MS = 1000;
     const lastFlashAt = new WeakMap();
   
-    /** Triggers the CSS flash on a tile, but no more than once per second per tile. */
     function triggerImpact(el) {
       if (!el) return;
       const now = performance.now();
       const last = lastFlashAt.get(el) || 0;
       if (now - last < FLASH_COOLDOWN_MS) {
-        return; // still cooling down — skip this flash
+        return;
       }
       lastFlashAt.set(el, now);
   
-      // retrigger the CSS animation
       el.classList.remove("tile-hit");
-      // force reflow so the animation restarts even if it was just on
       void el.offsetWidth;
       el.classList.add("tile-hit");
   
-      // optional cleanup: remove class after animation ends
       setTimeout(() => el.classList.remove("tile-hit"), 260);
     }
   
-    // ----- Exit button + visibility helpers -----
     function getExitButtons() {
       return {
         top: document.getElementById("end-game-top"),
@@ -159,19 +148,17 @@
       if (bottom) bottom.classList.add("is-hidden");
     }
   
-    // -------- State --------
     const state = {
       built: false,
-      building: false,        // build lock
+      building: false,
       zone: null,
-      clonesByOriginal: new Map(), // original -> clone
-      localPos: new WeakMap(),     // clone -> { x, y, w, h }
-      velocity: new WeakMap(),     // clone -> { vx, vy }
-      drag: null,                  // { clone, offsetX, offsetY, lastX, lastY, vx, vy, lastT }
+      clonesByOriginal: new Map(),
+      localPos: new WeakMap(),
+      velocity: new WeakMap(),
+      drag: null,
       anim: { running: false, lastT: 0 }
     };
   
-    // -------- Build world --------
     function buildWorldOnce(clickedOriginal, startX, startY) {
       if (state.built || state.building || !isGameEnabled()) return;
       state.building = true;
@@ -179,18 +166,14 @@
       const bounds = computeGameBounds();
       if (!bounds) { state.building = false; return; }
   
-      // Freeze hover/scale during measurement
       document.body.classList.add("freeze-skill-layout");
   
-      // 1) Snapshot positions FIRST
       const originals = Array.from(document.querySelectorAll(".img-background-card"));
       const snaps = snapshotOriginalRects(originals);
   
-      // 2) Create/align the zone
       const zone = ensureGameZone(bounds);
       state.zone = zone;
   
-      // 3) Create clones at snapshot positions; THEN hide originals
       snaps.forEach(({ el, left, top, width, height }) => {
         const clone = el.cloneNode(true);
         clone.classList.add("skill-drag-clone");
@@ -205,28 +188,23 @@
         state.localPos.set(clone, { x: localLeft, y: localTop, w: width, h: height });
         state.velocity.set(clone, { vx: 0, vy: 0 });
   
-        // Hide originals but keep layout reserved
         el.classList.add("skill-original-ghost");
       });
   
-      // 4) Drags occur on clones only
       zone.addEventListener("mousedown", onCloneMouseDown);
   
       state.built = true;
       state.building = false;
       document.body.classList.remove("freeze-skill-layout");
   
-      // Start physics loop
       startAnimLoop();
-  
-      // Wire Esc + buttons to end the game
+
       window.addEventListener("keydown", onKeyDownForEnd);
       const { top: btnTop, bottom: btnBottom } = getExitButtons();
       if (btnTop && !btnTop.__boundEnd) { btnTop.addEventListener("click", endGame); btnTop.__boundEnd = true; }
       if (btnBottom && !btnBottom.__boundEnd) { btnBottom.addEventListener("click", endGame); btnBottom.__boundEnd = true; }
       showExitButtons();
   
-      // If first click was on an original, start drag on its clone
       if (clickedOriginal) {
         const targetClone = state.clonesByOriginal.get(clickedOriginal);
         if (targetClone) startDrag(targetClone, startX, startY);
@@ -256,9 +234,7 @@
         lastT: performance.now()
       };
   
-      // Always-on highlight while dragging
       clone.classList.add("picked-up");
-      // keep on top of other tiles within the zone
       clone.style.zIndex = "10001";
   
       document.body.classList.add("dragging-skill");
@@ -315,18 +291,15 @@
   
       const { clone, vx, vy } = state.drag;
   
-      // Compute speed, apply threshold + clamps
       const speed = Math.hypot(vx, vy);
       if (speed >= THROW_MIN_SPEED) {
         const sx = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vx * THROW_SCALE));
         const sy = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vy * THROW_SCALE));
         state.velocity.set(clone, { vx: sx, vy: sy });
       } else {
-        // too slow — treat as a drop
         state.velocity.set(clone, { vx: 0, vy: 0 });
       }
   
-      // Clear drag visuals (physics loop will keep glow only while dragging)
       clone.classList.remove("picked-up");
       clone.style.removeProperty("z-index");
       document.body.classList.remove("dragging-skill");
@@ -335,7 +308,6 @@
       state.drag = null;
     }
   
-    // -------- Physics & collisions --------
     function startAnimLoop() {
       if (state.anim.running) return;
       state.anim.running = true;
@@ -355,11 +327,9 @@
       requestAnimationFrame(tick);
     }
   
-    // Physics step: keeps dragged tile highlighted every frame
     function stepPhysics(dt) {
       if (!state.built || !state.zone) return;
   
-      // Ensure dragged tile stays visually highlighted every tick
       if (state.drag && state.drag.clone) {
         if (!state.drag.clone.classList.contains("picked-up")) {
           state.drag.clone.classList.add("picked-up");
@@ -371,7 +341,6 @@
       const zoneW = zr.width;
       const zoneH = zr.height;
   
-      // Build a list of movable tiles (exclude the dragged one)
       const movers = [];
       state.clonesByOriginal.forEach((clone) => {
         if (state.drag && clone === state.drag.clone) return;
@@ -381,12 +350,10 @@
         movers.push({ clone, lp, vel });
       });
   
-      // 1) Integrate positions + wall collisions
       for (const m of movers) {
         m.lp.x += m.vel.vx * dt;
         m.lp.y += m.vel.vy * dt;
   
-        // Left/Right walls
         if (m.lp.x < 0) {
           m.lp.x = 0;
           m.vel.vx = -m.vel.vx * BOUNCE_WALL;
@@ -397,7 +364,6 @@
           triggerImpact(m.clone);
         }
   
-        // Top/Bottom walls
         if (m.lp.y < 0) {
           m.lp.y = 0;
           m.vel.vy = -m.vel.vy * BOUNCE_WALL;
@@ -409,7 +375,6 @@
         }
       }
   
-      // 2) Collide each mover with the dragged tile (if any)
       if (state.drag) {
         const dLP = state.localPos.get(state.drag.clone);
         if (dLP) {
@@ -422,19 +387,16 @@
         }
       }
   
-      // 3) Pairwise collisions between non-drag tiles
       for (let i = 0; i < movers.length; i++) {
         for (let j = i + 1; j < movers.length; j++) {
           resolvePairwise(movers[i], movers[j], zoneW, zoneH);
         }
       }
   
-      // 4) Damping + render + persist
       for (const m of movers) {
         m.vel.vx *= Math.pow(FRICTION, dt * 60);
         m.vel.vy *= Math.pow(FRICTION, dt * 60);
   
-        // Clamp after corrections
         if (m.lp.x < 0) m.lp.x = 0;
         if (m.lp.y < 0) m.lp.y = 0;
         if (m.lp.x + m.lp.w > zoneW) m.lp.x = zoneW - m.lp.w;
@@ -446,13 +408,11 @@
       }
     }
   
-    // Push-and-bounce vs the dragged rectangle, with flash
     function resolveAgainstDragged(lp, vel, dragRect, dragVX, dragVY, zoneW, zoneH, movingClone) {
       const overlapX = Math.max(0, Math.min(lp.x + lp.w, dragRect.x + dragRect.w) - Math.max(lp.x, dragRect.x));
       const overlapY = Math.max(0, Math.min(lp.y + lp.h, dragRect.y + dragRect.h) - Math.max(lp.y, dragRect.y));
       if (overlapX <= 0 || overlapY <= 0) return;
   
-      // Flash both tiles
       triggerImpact(movingClone);
       if (state.drag && state.drag.clone) triggerImpact(state.drag.clone);
   
@@ -480,14 +440,12 @@
         vel.vx += dragVX * 0.2;
       }
   
-      // keep inside bounds
       if (lp.x < 0) lp.x = 0;
       if (lp.y < 0) lp.y = 0;
       if (lp.x + lp.w > zoneW) lp.x = zoneW - lp.w;
       if (lp.y + lp.h > zoneH) lp.y = zoneH - lp.h;
     }
   
-    // Pairwise AABB collision resolution between two movers (equal mass) + flash
     function resolvePairwise(a, b, zoneW, zoneH) {
       const ax2 = a.lp.x + a.lp.w, ay2 = a.lp.y + a.lp.h;
       const bx2 = b.lp.x + b.lp.w, by2 = b.lp.y + b.lp.h;
@@ -496,13 +454,10 @@
       const overlapY = Math.max(0, Math.min(ay2, by2) - Math.max(a.lp.y, b.lp.y));
       if (overlapX <= 0 || overlapY <= 0) return;
   
-      // Flash both colliding tiles
       triggerImpact(a.clone);
       triggerImpact(b.clone);
   
-      // Smallest translation axis
       if (overlapX < overlapY) {
-        // push along X
         if (a.lp.x + a.lp.w / 2 < b.lp.x + b.lp.w / 2) {
           a.lp.x -= overlapX / 2;
           b.lp.x += overlapX / 2;
@@ -510,12 +465,10 @@
           a.lp.x += overlapX / 2;
           b.lp.x -= overlapX / 2;
         }
-        // swap X velocities with restitution
         const tmp = a.vel.vx;
         a.vel.vx = b.vel.vx * BOUNCE_TILE;
         b.vel.vx = tmp       * BOUNCE_TILE;
       } else {
-        // push along Y
         if (a.lp.y + a.lp.h / 2 < b.lp.y + b.lp.h / 2) {
           a.lp.y -= overlapY / 2;
           b.lp.y += overlapY / 2;
@@ -523,13 +476,11 @@
           a.lp.y += overlapY / 2;
           b.lp.y -= overlapY / 2;
         }
-        // swap Y velocities with restitution
         const tmp = a.vel.vy;
         a.vel.vy = b.vel.vy * BOUNCE_TILE;
         b.vel.vy = tmp       * BOUNCE_TILE;
       }
   
-      // Re-clamp if needed
       if (a.lp.x < 0) a.lp.x = 0;
       if (a.lp.y < 0) a.lp.y = 0;
       if (a.lp.x + a.lp.w > zoneW) a.lp.x = zoneW - a.lp.w;
@@ -541,7 +492,6 @@
       if (b.lp.y + b.lp.h > zoneH) b.lp.y = zoneH - b.lp.h;
     }
   
-    // -------- Realign on resize/scroll --------
     function realignAllClones() {
       if (!state.built || !state.zone) return;
   
@@ -572,7 +522,6 @@
   
     function onResize() {
       if (!isGameEnabled()) {
-        // Tear down if screen shrinks below tablet size
         if (state.built) {
           if (state.zone) state.zone.remove();
           state.clonesByOriginal.forEach((clone, original) => {
@@ -593,12 +542,11 @@
       realignAllClones();
     }
   
-    // -------- Bind originals (build + pickup on first click) --------
     function onOriginalMouseDown(e) {
       if (e.button !== 0) return;
       if (!isGameEnabled()) return;
       e.preventDefault();
-      e.stopPropagation(); // avoid bubbling to siblings/parents
+      e.stopPropagation();
       buildWorldOnce(e.currentTarget, e.pageX, e.pageY);
     }
   
@@ -612,7 +560,6 @@
       });
     }
   
-    // -------- Keyboard: Esc to end --------
     function onKeyDownForEnd(e) {
       if (e.key === "Escape" || e.key === "Esc") {
         if (state.built) {
@@ -622,18 +569,14 @@
       }
     }
   
-    // -------- End game / teardown --------
     function endGame() {
-      // Stop animation loop
       state.anim.running = false;
   
-      // Remove listeners bound to zone/clones
       if (state.zone) {
         state.zone.removeEventListener("mousedown", onCloneMouseDown);
-        state.zone.remove(); // removes overlay + clones container
+        state.zone.remove();
       }
   
-      // Unhide originals, clear maps
       state.clonesByOriginal.forEach((clone, original) => {
         original.classList.remove("skill-original-ghost");
       });
@@ -641,32 +584,25 @@
       state.localPos = new WeakMap();
       state.velocity = new WeakMap();
   
-      // Clear drag state
       if (state.drag && state.drag.clone) {
         state.drag.clone.classList.remove("picked-up");
         state.drag.clone.style.removeProperty("z-index");
       }
       state.drag = null;
   
-      // UI/body classes
       document.body.classList.remove("dragging-skill");
       document.body.classList.remove("freeze-skill-layout");
   
-      // Flags
       state.zone = null;
       state.built = false;
       state.building = false;
   
-      // Unbind global listeners
-      window.removeEventListener("mousemove", onMouseMove); // safe no-op if not set
-      // mouseup used { once: true } so no need to remove
+      window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("keydown", onKeyDownForEnd);
   
-      // Hide the end-game buttons again
       hideExitButtons();
     }
   
-    // -------- Init --------
     document.addEventListener("DOMContentLoaded", bindOriginals);
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", realignAllClones, { passive: true });

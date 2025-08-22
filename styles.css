@@ -37,7 +37,7 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  height: 300px; /* Adjust this value based on design preference */
+  height: 300px;
   margin-top: 15px;
 }
 
@@ -47,7 +47,7 @@ section {
   font-weight: 600;
   font-size: 3rem;
   color: black;
-  margin: 0; /* Remove default margin */
+  margin: 0;
 }
 
 /* Job Title Style */
@@ -56,12 +56,12 @@ section {
   font-weight: 400;
   font-size: 1.5rem;
   color: black;
-  margin: 0; /* Remove default margin */
+  margin: 0;
 }
 
 /* Social Icons Container */
 .social-icons-container {
-  gap: 20px; /* Adds space between icons */
+  gap: 20px;
 }
 
 /* Icon Container - Hover Effect */
@@ -358,29 +358,29 @@ section {
 }
 
 #nameTitle, #jobTitle {
-  text-align: center; /* Keep both elements centered */
-  margin-top: 0; /* Remove unnecessary top margin */
+  text-align: center;
+  margin-top: 0;
 }
 
 #nameTitle {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 500; /* Slightly more bold than normal */
-  font-size: 3rem; /* Maintain the same size for prominence */
-  letter-spacing: 0.4px; /* Maintain tight spacing for clarity */
-  line-height: 1.2; /* Keep compact vertical spacing */
-  color: rgba(33, 36, 41, 0.95); /* Slightly softened black */
-  margin-bottom: 8px; /* Reduce spacing between name and job title */
+  font-weight: 500;
+  font-size: 3rem;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  color: rgba(33, 36, 41, 0.95);
+  margin-bottom: 8px;
 }
 
 #jobTitle {
   font-family: 'Montserrat', sans-serif;
-  font-weight: 400; /* Keep it at a regular weight */
+  font-weight: 400;
   font-size: 1.7rem;
   letter-spacing: 0.3px;
   line-height: 1.3;
   color: rgba(33, 36, 41, 0.9);
   margin-bottom: 16px;
-  text-shadow: 0.5px 0.5px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+  text-shadow: 0.5px 0.5px rgba(0, 0, 0, 0.5);
 }
 
 .profile-picture-container {
@@ -669,7 +669,7 @@ section {
   cursor: pointer;
 }
 
-/* --- Active hover motion: TILT-POP (enhanced) --- */
+/* TILT-POP */
 @keyframes tilt-pop {
   0%   { transform: scale(1.05) rotate(0deg); }
   30%  { transform: scale(1.08) rotate(1deg); }
@@ -772,16 +772,13 @@ section {
 .aws-card     { --accent: #ffd60a; }
 .sql-card     { --accent: #4db6ac; }
 
-
-/* New highlight colours */
 .flask-card { --accent: whitesmoke; }
-.terraform-card { --accent: #7B42BC; }  /* Terraform purple */
-.typescript-card { --accent: #3178C6; } /* TypeScript blue */
-.powerbi-card { --accent: #F2C811; }    /* Power BI gold */
+.terraform-card { --accent: #7B42BC; }
+.typescript-card { --accent: #3178C6; }
+.powerbi-card { --accent: #F2C811; }
 
 
 /* Old paint-splatter functionality */
-
 
 /*
 
@@ -1039,28 +1036,6 @@ section {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ============================
         GAME SECTION
    ============================ */
@@ -1071,12 +1046,12 @@ section {
     left: 0;
     width: 100%;
     z-index: 9999;
-    pointer-events: auto;   /* must receive clicks for dragging */
+    pointer-events: auto;
   }
   
   .skill-drag-clone {
     position: absolute;
-    pointer-events: auto;   /* clones are interactive */
+    pointer-events: auto;
     will-change: transform;
     transform: translate3d(0,0,0);
     box-shadow: 0 8px 30px rgba(0,0,0,0.35);
@@ -1092,11 +1067,10 @@ section {
   
   .skill-original-ghost {
     opacity: 0;
-    visibility: hidden;   /* keeps layout space so grid doesn’t collapse */
+    visibility: hidden;
     transition: none;
   }
   
-  /* Cursor + interaction state during dragging */
   body.dragging-skill {
     user-select: none;
     cursor: grabbing;
@@ -1106,7 +1080,6 @@ section {
     box-shadow: 0 0 40px var(--accent), 0 0 12px rgba(255,255,255,0.25);
   }
   
-  /* Disable hover/animations on tiles while dragging so they don't fight the drag */
   body.dragging-skill .img-background-card,
   body.dragging-skill .card {
     pointer-events: none;
@@ -1120,7 +1093,6 @@ section {
     animation: none !important;
   }
   
-  /* Freeze hover/scale during initial snapshot to avoid skewed measurements */
   .freeze-skill-layout .img-background-card,
   .freeze-skill-layout .img-background-card:hover,
   .freeze-skill-layout .img-background-card:focus-visible {
@@ -1129,20 +1101,17 @@ section {
     animation: none !important;
   }
   
-  /* === Visual Bounds Overlay (purely decorative) === */
   .skill-game-bounds {
     position: absolute;
-    inset: 0;              /* fill the zone */
-    /* border: 2px dashed rgba(225, 228, 232, 0.45);
-    border-radius: 10px; */
+    inset: 0;
     box-shadow: inset 0 0 40px rgba(0,0,0,0.15);
     opacity: 0;
     animation: sgb-fade-in 300ms ease-out forwards;
-    pointer-events: none;  /* do not block dragging */
+    pointer-events: none;
   }
   
   .skill-game-bounds__label {
-    position: sticky;      /* stays near the top as you scroll */
+    position: sticky;
     top: 8px;
     left: 12px;
     display: inline-block;
@@ -1169,20 +1138,16 @@ section {
   transform: none !important; box-shadow: none !important; animation: none !important;
 }
 
-
-/* Clone normalization: precise absolute placement */
 .skill-drag-clone {
-  position: absolute;          /* ensure absolute positioning */
-  margin: 0 !important;        /* ignore .card margins from grid layout */
-  box-sizing: border-box;      /* borders included in width/height */
+  position: absolute;
+  margin: 0 !important;
+  box-sizing: border-box;
 }
 
-/* Allow interaction with clones/zone */
 #skill-game-zone { pointer-events: auto; overflow: hidden; }
 .skill-drag-clone { pointer-events: auto; cursor: grab; margin: 0 !important; box-sizing: border-box; position: absolute; }
 .skill-drag-clone.picked-up { cursor: grabbing; }
 
-/* Keep measurements stable during the initial snapshot */
 .freeze-skill-layout .img-background-card,
 .freeze-skill-layout .img-background-card:hover,
 .freeze-skill-layout .img-background-card:focus-visible {
@@ -1193,16 +1158,14 @@ section {
 
 
 
-/* Collision flash — uses each tile’s --accent color */
 .skill-drag-clone {
-  position: absolute;      /* ensure ::after positions correctly */
-  /* keep whatever you already have (left/top set by JS) */
+  position: absolute;
 }
 
 .skill-drag-clone.tile-hit::after {
   content: "";
   position: absolute;
-  inset: -6px;             /* glow bleeds outside a bit */
+  inset: -6px;
   border-radius: 8px;
   pointer-events: none;
   box-shadow:
@@ -1233,7 +1196,6 @@ section {
 }
 
 
-/* Stronger persistent glow while a tile is being dragged */
 .skill-drag-clone.picked-up {
   box-shadow:
     0 0 28px 6px var(--accent),
@@ -1241,15 +1203,13 @@ section {
 }
 
 
-/* Strong, persistent glow while a tile is being dragged */
 #skill-game-zone .skill-drag-clone.picked-up {
   box-shadow:
     0 0 28px 6px var(--accent),
     0 0 60px 16px rgba(255, 255, 255, 0.12) !important;
-  z-index: 10001; /* sits above other tiles */
+  z-index: 10001;
 }
 
-/* While dragging, kill competing hover animations anywhere */
 body.dragging-skill .img-background-card,
 body.dragging-skill .img-background-card:hover,
 body.dragging-skill .img-background-card:focus-visible,
@@ -1260,10 +1220,8 @@ body.dragging-skill .card:hover {
 }
 .is-hidden { display: none !important; }
 
-/* Sections must be positioning contexts for absolute children */
 #projects, #skills { position: relative; }
 
-/* Subtle floating “End Game” buttons */
 .game-exit-btn {
   position: absolute;
   width: 36px;
@@ -1281,18 +1239,17 @@ body.dragging-skill .card:hover {
   opacity: 0.35;
   transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
   backdrop-filter: blur(2px);
-  z-index: 10002;           /* higher than #skill-game-zone (9999) */
-  pointer-events: auto;     /* ensure clicks go to the button */
+  z-index: 10002;
+  pointer-events: auto;
 }
 
 .game-exit-btn {
-  opacity: 0.5;  /* was 0.35 → more visible at rest */
-  background: rgba(36,41,46,0.85); /* slightly less transparent */
-  border: 1px solid rgba(225,228,232,0.5); /* brighter border */
-  color: rgba(255,255,255,0.95); /* brighter ✕ */
+  opacity: 0.5;
+  background: rgba(36,41,46,0.85);
+  border: 1px solid rgba(225,228,232,0.5);
+  color: rgba(255,255,255,0.95);
 }
 
-/* Hover/focus affordance */
 .game-exit-btn:hover,
 .game-exit-btn:focus-visible {
   opacity: 0.95;
@@ -1301,9 +1258,7 @@ body.dragging-skill .card:hover {
   outline: none;
 }
 
-/* Exact placement */
 .game-exit-top {    top: 25px;   right: 25px; }
 .game-exit-bottom { bottom: 25px; right: 25px; }
 
-/* Start hidden, shown by JS once game starts */
 .is-hidden { display: none !important; }
