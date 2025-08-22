@@ -1042,21 +1042,41 @@ section {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ============================
    Skill Tile Drag Game
    ============================ */
 
    #skill-game-zone {
     position: absolute;
+    top: 0;
     left: 0;
     width: 100%;
-    pointer-events: none;
     z-index: 9999;
+    pointer-events: auto;   /* must receive clicks for dragging */
   }
   
   .skill-drag-clone {
     position: absolute;
-    pointer-events: none;
+    pointer-events: auto;   /* clones are interactive */
     will-change: transform;
     transform: translate3d(0,0,0);
     box-shadow: 0 8px 30px rgba(0,0,0,0.35);
@@ -1072,30 +1092,71 @@ section {
   
   .skill-original-ghost {
     opacity: 0;
-    visibility: hidden;
+    visibility: hidden;   /* keeps layout space so grid doesn’t collapse */
     transition: none;
   }
   
+  /* Cursor + interaction state during dragging */
   body.dragging-skill {
     user-select: none;
     cursor: grabbing;
   }
   
-
-.skill-drag-clone.picked-up {
-  box-shadow: 0 0 40px var(--accent), 0 0 12px rgba(255,255,255,0.25);
-}
-
-
-body.dragging-skill .img-background-card,
-body.dragging-skill .card {
-  pointer-events: none;
-}
-
-body.dragging-skill .img-background-card:hover,
-body.dragging-skill .img-background-card:focus-visible,
-body.dragging-skill .card:hover {
-  transform: none !important;
-  box-shadow: none !important;
-  animation: none !important;
-}
+  .skill-drag-clone.picked-up {
+    box-shadow: 0 0 40px var(--accent), 0 0 12px rgba(255,255,255,0.25);
+  }
+  
+  /* Disable hover/animations on tiles while dragging so they don't fight the drag */
+  body.dragging-skill .img-background-card,
+  body.dragging-skill .card {
+    pointer-events: none;
+  }
+  
+  body.dragging-skill .img-background-card:hover,
+  body.dragging-skill .img-background-card:focus-visible,
+  body.dragging-skill .card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  
+  /* Freeze hover/scale during initial snapshot to avoid skewed measurements */
+  .freeze-skill-layout .img-background-card,
+  .freeze-skill-layout .img-background-card:hover,
+  .freeze-skill-layout .img-background-card:focus-visible {
+    transform: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  
+  /* === Visual Bounds Overlay (purely decorative) === */
+  .skill-game-bounds {
+    position: absolute;
+    inset: 0;              /* fill the zone */
+    border: 2px dashed rgba(225, 228, 232, 0.45);
+    border-radius: 10px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.15);
+    opacity: 0;
+    animation: sgb-fade-in 300ms ease-out forwards;
+    pointer-events: none;  /* do not block dragging */
+  }
+  
+  .skill-game-bounds__label {
+    position: sticky;      /* stays near the top as you scroll */
+    top: 8px;
+    left: 12px;
+    display: inline-block;
+    margin: 8px 0 0 12px;
+    padding: 4px 10px;
+    background: rgba(36,41,46,0.85);
+    border: 1px solid rgba(225,228,232,0.25);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .3px;
+  }
+  
+  @keyframes sgb-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  
