@@ -1218,3 +1218,17 @@ section {
 }
 
 #skill-game-zone { outline: 3px solid dodgerblue; }
+
+/* Allow interaction with clones/zone */
+#skill-game-zone { pointer-events: auto; overflow: hidden; }
+.skill-drag-clone { pointer-events: auto; cursor: grab; margin: 0 !important; box-sizing: border-box; position: absolute; }
+.skill-drag-clone.picked-up { cursor: grabbing; }
+
+/* Keep measurements stable during the initial snapshot */
+.freeze-skill-layout .img-background-card,
+.freeze-skill-layout .img-background-card:hover,
+.freeze-skill-layout .img-background-card:focus-visible {
+  transform: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
