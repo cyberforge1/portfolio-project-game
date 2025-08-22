@@ -1,11 +1,7 @@
-/* ==========================================================
-   Skill Tile Game — build-on-first-click + drag + collisions
-   with per-tile collision flash using each tile's --accent.
-   Adds: Esc-to-exit, top/bottom exit buttons shown only
-   when the game is active.
-   ========================================================== */
+// skill-game.js
+
+
    (function () {
-    // -------- Config --------
     const MIN_WIDTH = 768;
     const BOUNCE_WALL = 0.85;
     const BOUNCE_TILE = 0.92;
@@ -162,6 +158,9 @@
     function buildWorldOnce(clickedOriginal, startX, startY) {
       if (state.built || state.building || !isGameEnabled()) return;
       state.building = true;
+
+      document.body.classList.add("game-active");
+      window.dispatchEvent(new CustomEvent("game:start"));
   
       const bounds = computeGameBounds();
       if (!bounds) { state.building = false; return; }

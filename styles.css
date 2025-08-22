@@ -31,7 +31,6 @@ section {
 }
 
 
-/* Profile Info Container - Ensures even vertical spacing */
 .profile-info-container {
   display: flex;
   flex-direction: column;
@@ -41,7 +40,6 @@ section {
   margin-top: 15px;
 }
 
-/* Name Style */
 .name-style {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
@@ -50,7 +48,6 @@ section {
   margin: 0;
 }
 
-/* Job Title Style */
 .job-style {
   font-family: 'Lato', sans-serif;
   font-weight: 400;
@@ -59,12 +56,10 @@ section {
   margin: 0;
 }
 
-/* Social Icons Container */
 .social-icons-container {
   gap: 20px;
 }
 
-/* Icon Container - Hover Effect */
 .icon-container {
   transition: transform 0.3s ease, color 0.3s ease;
 }
@@ -105,7 +100,6 @@ section {
 
 .first_page .col-12.container {
   position: relative;
-  /* Adjust the position upward */
   transform: translateY(-5%);
 }
 
@@ -391,17 +385,36 @@ section {
   width: 10px;
 }
 
-
-.project-div, .image-container {
+.project-div,
+.image-container {
   opacity: 0;
-  transform: translateX(100px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transform: translateX(24px);
+  transition:
+    transform 420ms cubic-bezier(.22,.61,.36,1),
+    opacity   420ms ease;
+  will-change: transform, opacity;
 }
 
-.project-div.active, .image-container.active {
+.project-div.active,
+.image-container.active {
   opacity: 1;
   transform: translateX(0);
 }
+
+.section-title {
+  opacity: 0;
+  transform: translateX(24px);
+  transition:
+    transform 420ms cubic-bezier(.22,.61,.36,1),
+    opacity   420ms ease;
+}
+.section-title.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+
 
 .project-link {
   color: inherit; 
@@ -423,7 +436,6 @@ section {
   transform: scale(1.1);
 }
 
-/* Neighbors once removed */
 .navbar-nav .nav-item.scale-smallest {
   transform: scale(1.05);
 }
@@ -684,7 +696,6 @@ section {
   animation: tilt-pop 0.5s ease-out;
 }
 
-/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .img-background-card:hover,
   .img-background-card:focus-visible {
@@ -1262,3 +1273,14 @@ body.dragging-skill .card:hover {
 .game-exit-bottom { bottom: 25px; right: 25px; }
 
 .is-hidden { display: none !important; }
+
+
+.project-div,
+.image-container {
+  opacity: 0;
+  transform: translateX(24px);
+  transition:
+    transform 420ms cubic-bezier(.22,.61,.36,1),
+    opacity   420ms ease;
+  will-change: transform, opacity;
+}
