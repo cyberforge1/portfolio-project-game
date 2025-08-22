@@ -1035,26 +1035,16 @@ section {
 
 
 
-
-
-
-
-
-
-
-
-
-
 /* ============================
-   Skill Tile Drag Game (APPEND)
+   Skill Tile Drag Game
    ============================ */
 
    #skill-game-zone {
-    position: absolute;   /* document-coord overlay */
+    position: absolute;
     left: 0;
     width: 100%;
-    pointer-events: none; /* overlay ignores input */
-    z-index: 9999;        /* above page chrome */
+    pointer-events: none;
+    z-index: 9999;
   }
   
   .skill-drag-clone {
@@ -1064,7 +1054,7 @@ section {
     transform: translate3d(0,0,0);
     box-shadow: 0 8px 30px rgba(0,0,0,0.35);
     border-radius: 6px;
-    transition: none !important;   /* zero extra motion */
+    transition: none !important;
     animation: none !important;
   }
   
@@ -1074,30 +1064,27 @@ section {
   }
   
   .skill-original-ghost {
-    opacity: 0;                 /* fully invisible while picked up */
-    visibility: hidden;         /* ensure no flicker */
-    transition: none;           /* no fade delay */
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
   }
   
   body.dragging-skill {
-    user-select: none;          /* prevent text selection */
+    user-select: none;
     cursor: grabbing;
   }
   
 
-/* Highlight the picked-up floating clone */
 .skill-drag-clone.picked-up {
-  /* reuse your accent glow without changing position */
   box-shadow: 0 0 40px var(--accent), 0 0 12px rgba(255,255,255,0.25);
 }
 
-/* While dragging: turn OFF all card hovers/motions for the page */
+
 body.dragging-skill .img-background-card,
 body.dragging-skill .card {
-  pointer-events: none;               /* kills hover/click on other tiles */
+  pointer-events: none;
 }
 
-/* Defensive: neutralize hover-driven transforms/animations just in case */
 body.dragging-skill .img-background-card:hover,
 body.dragging-skill .img-background-card:focus-visible,
 body.dragging-skill .card:hover {
