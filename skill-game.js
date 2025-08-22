@@ -1,62 +1,41 @@
 /* ============================================
-   Skill Tile Drag Game — Physics World (>=768px)
-   Snapshot-first, hover-freeze, zone realignment
+   Skill Tile Game — Static (no dragging/moving)
    ============================================ */
    (function () {
-    const MIN_WIDTH = 768; // Enable game on small tablets and above
+    const MIN_WIDTH = 768; // small tablets and up
   
-    // ---------- Feature gates ----------
-    function isGameEnabled() {
-      return window.innerWidth >= MIN_WIDTH;
-    }
+    // ---- Feature gate ----
+    const isGameEnabled = () => window.innerWidth >= MIN_WIDTH;
   
-    // ---------- DOM helpers ----------
-    function getSectionById(id) {
-      // Prefer an actual <section id="...">
-      const exactSection = document.querySelector(`section#${id}`);
-      if (exactSection) return exactSection;
+    // ---- DOM helpers ----
+    // Only ever consider the <section id="..."> (ignore anchor divs)
+    const getSectionById = (id) => document.querySelector(`section#${id}`) || null;
   
-      // Fallback: find element by id and then the next <section>
-      const first = document.getElementById(id);
-      if (first && first.tagName !== "SECTION") {
-        let n = first.nextElementSibling;
-        while (n) {
-          if (n.tagName === "SECTION") return n;
-          n = n.nextElementSibling;
-        }
-      }
-      return null;
-    }
-  
+    // Use the SKILLS section as the game area
     function computeGameBounds() {
-      const projectsSection = getSectionById("projects");
       const skillsSection = getSectionById("skills");
-      if (!projectsSection || !skillsSection) return null;
-  
-      const projTop = projectsSection.getBoundingClientRect().top + window.scrollY;
-      const skillsBottom = skillsSection.getBoundingClientRect().bottom + window.scrollY;
-  
-      return { top: projTop, bottom: skillsBottom, height: skillsBottom - projTop };
+      if (!skillsSection) return null;
+      const r = skillsSection.getBoundingClientRect();
+      const top = r.top + window.scrollY;
+      return { top, bottom: top + r.height, height: r.height };
     }
   
-    // ---------- Visual bounds overlay ----------
+    // Visible frame inside the zone
     function ensureBoundsOverlay(zone) {
+      zone.querySelectorAll(".skill-game-bounds").forEach((el, i) => { if (i > 0) el.remove(); });
       let boundsEl = zone.querySelector(".skill-game-bounds");
       if (!boundsEl) {
         boundsEl = document.createElement("div");
         boundsEl.className = "skill-game-bounds";
-  
         const label = document.createElement("div");
         label.className = "skill-game-bounds__label";
         label.textContent = "Game Area";
-  
         boundsEl.appendChild(label);
         zone.appendChild(boundsEl);
       }
     }
   
-    // ---------- NEW: snapshot-first + robust placement helpers ----------
-    // Get rects for all originals BEFORE any DOM mutation (page coordinates)
+    // Snapshot BEFORE any DOM mutation (absolute page coordinates)
     function snapshotOriginalRects(cards) {
       return cards.map(card => {
         const r = card.getBoundingClientRect();
@@ -70,214 +49,166 @@
       });
     }
   
-    // Create/realign the game zone to exact bounds + viewport width
+    // Ensure a single, full-width zone aligned to bounds
     function ensureGameZone(bounds) {
+      const zones = document.querySelectorAll("#skill-game-zone");
+      zones.forEach((z, idx) => { if (idx > 0) z.remove(); });
+  
       let zone = document.getElementById("skill-game-zone");
       if (!zone) {
         zone = document.createElement("div");
         zone.id = "skill-game-zone";
         document.body.appendChild(zone);
       }
-      zone.style.top = bounds.top + "px";
-      zone.style.height = bounds.height + "px";
-      zone.style.left = "0px";
-      zone.style.width = document.documentElement.clientWidth + "px";
-      ensureBoundsOverlay(zone); // draw/update visual frame
+      zone.style.position = "absolute";
+      zone.style.left     = "0px";
+      zone.style.top      = bounds.top + "px";
+      zone.style.height   = bounds.height + "px";
+      zone.style.width    = document.documentElement.clientWidth + "px";
+  
+      ensureBoundsOverlay(zone);
       return zone;
     }
   
-    // Place a clone at an absolute page position within the zone
-    function placeCloneAtPagePos(pageLeft, pageTop, zone, clone) {
-      const zoneRect = zone.getBoundingClientRect();
-      const zoneLeft = zoneRect.left + window.scrollX;
-      const zoneTop  = zoneRect.top  + window.scrollY;
-      const localLeft = pageLeft - zoneLeft;
-      const localTop  = pageTop  - zoneTop;
-      clone.style.transform = `translate(${localLeft}px, ${localTop}px)`;
+    // Clamp a (pageLeft, pageTop) so a w×h box stays inside the zone
+    function clampPagePosToZone(pageLeft, pageTop, w, h, zone) {
+      const zr = zone.getBoundingClientRect();
+      const zoneLeft   = zr.left + window.scrollX;
+      const zoneTop    = zr.top  + window.scrollY;
+      const zoneRight  = zoneLeft + zr.width;
+      const zoneBottom = zoneTop  + zr.height;
+  
+      const minLeft = zoneLeft;
+      const minTop  = zoneTop;
+      const maxLeft = Math.max(zoneLeft, zoneRight  - w);
+      const maxTop  = Math.max(zoneTop,  zoneBottom - h);
+  
+      const clampedLeft = Math.min(Math.max(pageLeft, minLeft), maxLeft);
+      const clampedTop  = Math.min(Math.max(pageTop,  minTop),  maxTop);
+  
+      return { clampedLeft, clampedTop, zoneLeft, zoneTop };
     }
   
-    // ---------- State ----------
+    // Place a clone using ABSOLUTE left/top (no transforms)
+    function renderCloneAtPagePos(pageLeft, pageTop, w, h, zone, clone) {
+      const { clampedLeft, clampedTop, zoneLeft, zoneTop } =
+        clampPagePosToZone(pageLeft, pageTop, w, h, zone);
+  
+      const localLeft = clampedLeft - zoneLeft;
+      const localTop  = clampedTop  - zoneTop;
+  
+      clone.style.position = "absolute";
+      clone.style.left = `${localLeft}px`;
+      clone.style.top  = `${localTop}px`;
+      return { x: clampedLeft, y: clampedTop };
+    }
+  
+    // ---- State ----
     const state = {
       built: false,
+      building: false,              // re-entrant build lock
       zone: null,
-      clonesByOriginal: new Map(), // originalEl -> cloneEl
-      drag: null,                  // { clone, zone, srcW, srcH, offsetX, offsetY }
+      clonesByOriginal: new Map(),  // originalEl -> cloneEl
+      logicalPos: new WeakMap(),    // cloneEl -> { pageLeft, pageTop, width, height }
     };
   
-    // ---------- Builder (snapshot-first) ----------
+    // ---- Builder (no drag) ----
     function buildWorldOnce(clickedOriginal) {
-      if (state.built || !isGameEnabled()) return;
+      if (state.built || state.building || !isGameEnabled()) return;
+      state.building = true;
   
       const bounds = computeGameBounds();
-      if (!bounds) return;
+      if (!bounds) { state.building = false; return; }
   
-      // Freeze hover/scale so measurements are stable
+      // Freeze hover/scale for stable measurements
       document.body.classList.add("freeze-skill-layout");
   
-      // 1) Snapshot positions FIRST (before any DOM changes)
+      // 1) Snapshot originals BEFORE DOM changes
       const originals = Array.from(document.querySelectorAll(".img-background-card"));
       const snaps = snapshotOriginalRects(originals);
   
-      // 2) Create/align the zone
+      // 2) Create/realign zone
       const zone = ensureGameZone(bounds);
       state.zone = zone;
   
-      // 3) Create clones at snapshot positions; THEN hide originals
+      // 3) Create static clones at snapshot positions; hide originals
       snaps.forEach(({ el, left, top, width, height }) => {
         const clone = el.cloneNode(true);
         clone.classList.add("skill-drag-clone");
+        // Normalize the clone box for exact placement
         clone.style.width = width + "px";
         clone.style.height = height + "px";
+        clone.style.margin = "0";            // ignore grid/card margins
+        clone.style.boxSizing = "border-box";
         zone.appendChild(clone);
   
-        placeCloneAtPagePos(left, top, zone, clone);
+        const inBounds = renderCloneAtPagePos(left, top, width, height, zone, clone);
         state.clonesByOriginal.set(el, clone);
+        state.logicalPos.set(clone, { pageLeft: inBounds.x, pageTop: inBounds.y, width, height });
   
-        // Hide without collapsing layout (visibility keeps space)
+        // Hide the original without collapsing layout
         el.classList.add("skill-original-ghost");
       });
   
-      // 4) Listen for drags on clones
-      zone.addEventListener("mousedown", onCloneMouseDown);
-  
       state.built = true;
-  
-      // Unfreeze after everything is positioned
+      state.building = false;
       document.body.classList.remove("freeze-skill-layout");
-  
-      // If user started with a click on an original, start drag on its clone
-      if (clickedOriginal) {
-        const targetClone = state.clonesByOriginal.get(clickedOriginal);
-        if (targetClone) {
-          const onceMove = (ev) => {
-            window.removeEventListener("mousemove", onceMove);
-            startDrag(targetClone, ev.pageX, ev.pageY);
-          };
-          window.addEventListener("mousemove", onceMove, { once: true });
-        }
-      }
     }
   
-    // ---------- Drag logic (clones only) ----------
-    function startDrag(clone, pageX, pageY) {
-      const zone = state.zone;
-      if (!zone) return;
-  
-      clone.classList.add("picked-up");
-      document.body.classList.add("dragging-skill");
-  
-      const cloneRect = clone.getBoundingClientRect();
-      const srcW = cloneRect.width;
-      const srcH = cloneRect.height;
-  
-      const offsetX = pageX - (cloneRect.left + window.scrollX);
-      const offsetY = pageY - (cloneRect.top + window.scrollY);
-  
-      state.drag = { clone, zone, srcW, srcH, offsetX, offsetY };
-  
-      window.addEventListener("mousemove", onMouseMove, { passive: true });
-      window.addEventListener("mouseup", onMouseUp, { once: true });
-    }
-  
-    function positionClone(pageX, pageY) {
-      const d = state.drag;
-      if (!d) return;
-  
-      const zoneRect = d.zone.getBoundingClientRect();
-      const zoneLeft = zoneRect.left + window.scrollX;
-      const zoneTop = zoneRect.top + window.scrollY;
-      const zoneRight = zoneLeft + zoneRect.width;
-      const zoneBottom = zoneTop + zoneRect.height;
-  
-      const desiredLeft = pageX - d.offsetX;
-      const desiredTop = pageY - d.offsetY;
-  
-      const maxLeft = zoneRight - d.srcW;
-      const maxTop = zoneBottom - d.srcH;
-  
-      const clampedLeft = Math.max(zoneLeft, Math.min(maxLeft, desiredLeft));
-      const clampedTop = Math.max(zoneTop, Math.min(maxTop, desiredTop));
-  
-      const localLeft = clampedLeft - zoneLeft;
-      const localTop = clampedTop - zoneTop;
-  
-      d.clone.style.transform = `translate(${localLeft}px, ${localTop}px)`;
-    }
-  
-    function endDrag() {
-      const d = state.drag;
-      if (!d) return;
-  
-      d.clone.classList.remove("picked-up");
-      document.body.classList.remove("dragging-skill");
-  
-      window.removeEventListener("mousemove", onMouseMove);
-      state.drag = null;
-    }
-  
-    // ---------- Event handlers ----------
+    // ---- Event handlers (build only; no drag) ----
     function onOriginalMouseDown(e) {
       if (e.button !== 0) return;
-      if (!isGameEnabled()) return; // Don’t build on small screens
-      const original = e.currentTarget;
-      e.preventDefault();
-      buildWorldOnce(original);
-    }
-  
-    function onCloneMouseDown(e) {
-      if (e.button !== 0) return;
       if (!isGameEnabled()) return;
-  
-      const clone = e.target.closest(".skill-drag-clone");
-      if (!clone) return;
-  
       e.preventDefault();
-      startDrag(clone, e.pageX, e.pageY);
+      e.stopPropagation();
+      buildWorldOnce(e.currentTarget);
+    }
+    function preventDefaultDrag(ev) { ev.preventDefault(); }
+  
+    // ---- Realign on resize/scroll (keep static positions clamped) ----
+    function realignAllClones() {
+      if (!state.built || !state.zone) return;
+      const bounds = computeGameBounds();
+      if (!bounds) return;
+  
+      const zone = ensureGameZone(bounds); // repositions/resizes zone
+      state.zone = zone;
+  
+      state.clonesByOriginal.forEach((clone) => {
+        const lp = state.logicalPos.get(clone);
+        if (!lp) return;
+        const { pageLeft, pageTop, width, height } = lp;
+        const inBounds = renderCloneAtPagePos(pageLeft, pageTop, width, height, zone, clone);
+        // Keep logical in sync (in case zone shrank and clamped)
+        state.logicalPos.set(clone, {
+          pageLeft: inBounds.x,
+          pageTop: inBounds.y,
+          width,
+          height
+        });
+      });
     }
   
-    function onMouseMove(e) {
-      positionClone(e.pageX, e.pageY);
-    }
-  
-    function onMouseUp() {
-      endDrag();
-    }
-  
-    // Keep zone aligned on resize; destroy world if shrinking below threshold
     function onResize() {
       if (!isGameEnabled()) {
-        // If game was built and screen shrinks below tablet size — reset
+        // Reset if screen shrinks below tablet size
         if (state.built) {
           if (state.zone) state.zone.remove();
           state.clonesByOriginal.forEach((clone, original) => {
             original.classList.remove("skill-original-ghost");
           });
           state.clonesByOriginal.clear();
+          state.logicalPos = new WeakMap();
           state.zone = null;
-          state.drag = null;
           state.built = false;
+          state.building = false;
         }
         return;
       }
-  
-      if (state.built) {
-        const bounds = computeGameBounds();
-        if (!bounds || !state.zone) return;
-        ensureGameZone(bounds);
-      }
+      realignAllClones();
     }
   
-    // ---------- NEW: realign zone on scroll ----------
-    function realignZone() {
-      if (!state.built || !state.zone) return;
-      const bounds = computeGameBounds();
-      if (!bounds) return;
-      ensureGameZone(bounds); // updates top/height/width to follow page
-    }
-  
-    // ---------- Bind/unbind originals ----------
-    function preventDefaultDrag(ev) { ev.preventDefault(); }
-  
+    // ---- Bind originals & init ----
     function bindOriginals() {
       document.querySelectorAll(".img-background-card").forEach((el) => {
         if (!el.__skillInitBound) {
@@ -288,12 +219,11 @@
       });
     }
   
-    // ---------- Init ----------
     document.addEventListener("DOMContentLoaded", () => {
       bindOriginals();
     });
   
     window.addEventListener("resize", onResize);
-    window.addEventListener("scroll", realignZone, { passive: true });
+    window.addEventListener("scroll", realignAllClones, { passive: true });
   })();
   

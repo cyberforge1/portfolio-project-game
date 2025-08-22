@@ -1160,3 +1160,61 @@ section {
     to   { opacity: 1; }
   }
   
+
+  #skill-game-zone { pointer-events: auto; overflow: hidden; }
+.skill-drag-clone { pointer-events: auto; }
+.freeze-skill-layout .img-background-card,
+.freeze-skill-layout .img-background-card:hover,
+.freeze-skill-layout .img-background-card:focus-visible {
+  transform: none !important; box-shadow: none !important; animation: none !important;
+}
+
+
+
+
+
+
+
+
+
+/* Debug: show outlines around every clone */
+.skill-drag-clone {
+  outline: 2px solid red !important; /* bright red border for visibility */
+  background-clip: content-box;      /* keeps icons/text visible */
+}
+
+
+/* ============================
+   Skill Game: Debug Boundaries
+   Toggle by adding/removing .skill-game-debug on <body>
+   ============================ */
+   body.skill-game-debug #skill-game-zone {
+    outline: 3px solid rgba(30, 144, 255, 0.9); /* DodgerBlue */
+    box-shadow: inset 0 0 0 2px rgba(30, 144, 255, 0.35);
+  }
+  
+  body.skill-game-debug #skill-game-zone .skill-game-bounds {
+    outline: 2px dashed rgba(50, 205, 50, 0.9); /* LimeGreen */
+    border-radius: 10px;
+  }
+  
+  body.skill-game-debug #skill-game-zone .skill-game-bounds__label {
+    border: 1px solid rgba(50, 205, 50, 0.9);
+    background: rgba(50, 205, 50, 0.15);
+    color: rgba(225, 228, 232, 0.95);
+  }
+  
+  body.skill-game-debug #skill-game-zone .skill-drag-clone {
+    outline: 2px solid rgba(220, 20, 60, 0.95); /* Crimson */
+    box-shadow: 0 0 0 2px rgba(220, 20, 60, 0.25);
+  }
+
+
+/* Clone normalization: precise absolute placement */
+.skill-drag-clone {
+  position: absolute;          /* ensure absolute positioning */
+  margin: 0 !important;        /* ignore .card margins from grid layout */
+  box-sizing: border-box;      /* borders included in width/height */
+}
+
+#skill-game-zone { outline: 3px solid dodgerblue; }
