@@ -669,12 +669,12 @@ section {
   cursor: pointer;
 }
 
-/* TILT-POP */
+/* TILT-POP (medium subtle) */
 @keyframes tilt-pop {
-  0%   { transform: scale(1.05) rotate(0deg); }
-  30%  { transform: scale(1.08) rotate(1deg); }
-  60%  { transform: scale(1.05) rotate(-1deg); }
-  100% { transform: scale(1.05) rotate(0deg); }
+  0%   { transform: scale(1.04) rotate(0deg); }
+  30%  { transform: scale(1.06) rotate(0.7deg); }
+  60%  { transform: scale(1.04) rotate(-0.7deg); }
+  100% { transform: scale(1.04) rotate(0deg); }
 }
 
 .img-background-card:hover,
