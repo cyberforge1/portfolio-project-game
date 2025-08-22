@@ -11,18 +11,32 @@
     const MAX_DT = 1 / 30;     // clamp big frame gaps (s)
     const KICK_SCALE = 1.1;    // scale the drag velocity imparted to other tiles
     const MIN_KICK = 120;      // px/s, minimum impulse when drag is very slow
+
+    const THROW_SCALE      = 1.0;   // multiply the captured drag speed
+    const THROW_MIN_SPEED  = 80;    // px/s; below this, treat as a “drop”
+    const THROW_MAX_SPEED  = 2000;  // px/s; clamp to avoid crazy spikes
   
     const isGameEnabled = () => window.innerWidth >= MIN_WIDTH;
   
     // -------- DOM helpers --------
     const getSectionById = (id) => document.querySelector(`section#${id}`) || null;
   
+    // Make the game area span from the top of <section id="projects">
+    // down to the bottom of <section id="skills">
     function computeGameBounds() {
-      const skills = getSectionById("skills");
-      if (!skills) return null;
-      const r = skills.getBoundingClientRect();
-      const top = r.top + window.scrollY;
-      return { top, bottom: top + r.height, height: r.height };
+        const projects = document.querySelector("section#projects");
+        const skills   = document.querySelector("section#skills");
+        if (!projects || !skills) return null;
+    
+        const projTop    = projects.getBoundingClientRect().top + window.scrollY;
+        const skillsRect = skills.getBoundingClientRect();
+        const skillsBot  = skillsRect.bottom + window.scrollY; // top + height
+    
+        return {
+        top: projTop,
+        bottom: skillsBot,
+        height: skillsBot - projTop
+        };
     }
   
     function ensureBoundsOverlay(zone) {
@@ -273,21 +287,30 @@
       state.localPos.set(d.clone, { x: localLeft, y: localTop, w, h });
     }
   
-    // Clean up on release: remove highlight/z-index and listeners
     function onMouseUp() {
         if (!state.drag) return;
-    
-        // Leave dragged tile static after release (or keep your existing behavior)
-        state.velocity.set(state.drag.clone, { vx: 0, vy: 0 });
-    
-        // Remove persistent highlight and stacking override
-        state.drag.clone.classList.remove("picked-up");
-        state.drag.clone.style.removeProperty("z-index");
-    
+      
+        const { clone, vx, vy } = state.drag;
+      
+        // Compute speed, apply threshold + clamps
+        const speed = Math.hypot(vx, vy);
+        if (speed >= THROW_MIN_SPEED) {
+          const sx = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vx * THROW_SCALE));
+          const sy = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vy * THROW_SCALE));
+          state.velocity.set(clone, { vx: sx, vy: sy });
+        } else {
+          // too slow — treat as a drop
+          state.velocity.set(clone, { vx: 0, vy: 0 });
+        }
+      
+        // Clear drag visuals
+        clone.classList.remove("picked-up");
+        clone.style.removeProperty("z-index");
         document.body.classList.remove("dragging-skill");
+      
         window.removeEventListener("mousemove", onMouseMove);
         state.drag = null;
-    }
+      }
   
     // -------- Physics & collisions --------
     function startAnimLoop() {
