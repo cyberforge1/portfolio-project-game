@@ -773,6 +773,13 @@ section {
 .sql-card     { --accent: #4db6ac; }
 
 
+/* New highlight colours */
+.flask-card { --accent: #000000; }
+.terraform-card { --accent: #7B42BC; }  /* Terraform purple */
+.typescript-card { --accent: #3178C6; } /* TypeScript blue */
+.powerbi-card { --accent: #F2C811; }    /* Power BI gold */
+
+
 /* Old paint-splatter functionality */
 
 
