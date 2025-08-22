@@ -1232,3 +1232,52 @@ section {
   box-shadow: none !important;
   animation: none !important;
 }
+
+
+
+/* Collision flash — uses each tile’s --accent color */
+.skill-drag-clone {
+  position: absolute;      /* ensure ::after positions correctly */
+  /* keep whatever you already have (left/top set by JS) */
+}
+
+.skill-drag-clone.tile-hit::after {
+  content: "";
+  position: absolute;
+  inset: -6px;             /* glow bleeds outside a bit */
+  border-radius: 8px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 0 var(--accent),
+    0 0 0 0 rgba(255,255,255,0.0);
+  animation: collideFlash 240ms ease-out;
+}
+
+@keyframes collideFlash {
+  0% {
+    box-shadow:
+      0 0 0 0 var(--accent),
+      0 0 0 0 rgba(255,255,255,0.0);
+    opacity: 0.85;
+  }
+  50% {
+    box-shadow:
+      0 0 22px 4px var(--accent),
+      0 0 48px 10px rgba(255,255,255,0.15);
+    opacity: 1;
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 var(--accent),
+      0 0 0 0 rgba(255,255,255,0.0);
+    opacity: 0.9;
+  }
+}
+
+
+/* Stronger persistent glow while a tile is being dragged */
+.skill-drag-clone.picked-up {
+  box-shadow:
+    0 0 28px 6px var(--accent),
+    0 0 60px 16px rgba(255, 255, 255, 0.12);
+}
