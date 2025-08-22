@@ -49,7 +49,6 @@
         frame.className = "skill-game-bounds";
         const label = document.createElement("div");
         label.className = "skill-game-bounds__label";
-        label.textContent = "Game Area";
         frame.appendChild(label);
         zone.appendChild(frame);
       }
