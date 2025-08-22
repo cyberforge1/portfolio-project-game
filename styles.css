@@ -1062,7 +1062,7 @@ section {
 
 
 /* ============================
-   Skill Tile Drag Game
+        GAME SECTION
    ============================ */
 
    #skill-game-zone {
@@ -1281,3 +1281,71 @@ section {
     0 0 28px 6px var(--accent),
     0 0 60px 16px rgba(255, 255, 255, 0.12);
 }
+
+
+/* Strong, persistent glow while a tile is being dragged */
+#skill-game-zone .skill-drag-clone.picked-up {
+  box-shadow:
+    0 0 28px 6px var(--accent),
+    0 0 60px 16px rgba(255, 255, 255, 0.12) !important;
+  z-index: 10001; /* sits above other tiles */
+}
+
+/* While dragging, kill competing hover animations anywhere */
+body.dragging-skill .img-background-card,
+body.dragging-skill .img-background-card:hover,
+body.dragging-skill .img-background-card:focus-visible,
+body.dragging-skill .card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+.is-hidden { display: none !important; }
+
+/* Sections must be positioning contexts for absolute children */
+#projects, #skills { position: relative; }
+
+/* Subtle floating “End Game” buttons */
+.game-exit-btn {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(225,228,232,0.35);
+  background: rgba(36,41,46,0.75);
+  color: rgba(225,228,232,0.9);
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  backdrop-filter: blur(2px);
+  z-index: 10002;           /* higher than #skill-game-zone (9999) */
+  pointer-events: auto;     /* ensure clicks go to the button */
+}
+
+.game-exit-btn {
+  opacity: 0.5;  /* was 0.35 → more visible at rest */
+  background: rgba(36,41,46,0.85); /* slightly less transparent */
+  border: 1px solid rgba(225,228,232,0.5); /* brighter border */
+  color: rgba(255,255,255,0.95); /* brighter ✕ */
+}
+
+/* Hover/focus affordance */
+.game-exit-btn:hover,
+.game-exit-btn:focus-visible {
+  opacity: 0.95;
+  transform: scale(1.06);
+  box-shadow: 0 0 20px rgba(225,228,232,0.35);
+  outline: none;
+}
+
+/* Exact placement */
+.game-exit-top {    top: 25px;   right: 25px; }
+.game-exit-bottom { bottom: 25px; right: 25px; }
+
+/* Start hidden, shown by JS once game starts */
+.is-hidden { display: none !important; }

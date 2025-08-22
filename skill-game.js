@@ -1,6 +1,8 @@
 /* ==========================================================
    Skill Tile Game — build-on-first-click + drag + collisions
    with per-tile collision flash using each tile's --accent.
+   Adds: Esc-to-exit, top/bottom exit buttons shown only
+   when the game is active.
    ========================================================== */
    (function () {
     // -------- Config --------
@@ -11,7 +13,7 @@
     const MAX_DT = 1 / 30;     // clamp big frame gaps (s)
     const KICK_SCALE = 1.1;    // scale the drag velocity imparted to other tiles
     const MIN_KICK = 120;      // px/s, minimum impulse when drag is very slow
-
+  
     const THROW_SCALE      = 1.0;   // multiply the captured drag speed
     const THROW_MIN_SPEED  = 80;    // px/s; below this, treat as a “drop”
     const THROW_MAX_SPEED  = 2000;  // px/s; clamp to avoid crazy spikes
@@ -24,19 +26,19 @@
     // Make the game area span from the top of <section id="projects">
     // down to the bottom of <section id="skills">
     function computeGameBounds() {
-        const projects = document.querySelector("section#projects");
-        const skills   = document.querySelector("section#skills");
-        if (!projects || !skills) return null;
-    
-        const projTop    = projects.getBoundingClientRect().top + window.scrollY;
-        const skillsRect = skills.getBoundingClientRect();
-        const skillsBot  = skillsRect.bottom + window.scrollY; // top + height
-    
-        return {
+      const projects = document.querySelector("section#projects");
+      const skills   = document.querySelector("section#skills");
+      if (!projects || !skills) return null;
+  
+      const projTop    = projects.getBoundingClientRect().top + window.scrollY;
+      const skillsRect = skills.getBoundingClientRect();
+      const skillsBot  = skillsRect.bottom + window.scrollY; // top + height
+  
+      return {
         top: projTop,
         bottom: skillsBot,
         height: skillsBot - projTop
-        };
+      };
     }
   
     function ensureBoundsOverlay(zone) {
@@ -119,28 +121,43 @@
     // ---- Flash throttling (1 flash max per tile per second) ----
     const FLASH_COOLDOWN_MS = 1000;
     const lastFlashAt = new WeakMap();
-
-    /**
-     * Triggers the CSS flash on a tile, but no more than once per second per tile.
-     */
+  
+    /** Triggers the CSS flash on a tile, but no more than once per second per tile. */
     function triggerImpact(el) {
-    if (!el) return;
-    const now = performance.now();
-    const last = lastFlashAt.get(el) || 0;
-    if (now - last < FLASH_COOLDOWN_MS) {
+      if (!el) return;
+      const now = performance.now();
+      const last = lastFlashAt.get(el) || 0;
+      if (now - last < FLASH_COOLDOWN_MS) {
         return; // still cooling down — skip this flash
+      }
+      lastFlashAt.set(el, now);
+  
+      // retrigger the CSS animation
+      el.classList.remove("tile-hit");
+      // force reflow so the animation restarts even if it was just on
+      void el.offsetWidth;
+      el.classList.add("tile-hit");
+  
+      // optional cleanup: remove class after animation ends
+      setTimeout(() => el.classList.remove("tile-hit"), 260);
     }
-    lastFlashAt.set(el, now);
-
-    // retrigger the CSS animation
-    el.classList.remove("tile-hit");
-    // force reflow so the animation restarts even if it was just on
-    // eslint-disable-next-line no-unused-expressions
-    el.offsetWidth;
-    el.classList.add("tile-hit");
-
-    // optional cleanup: remove class after animation ends
-    setTimeout(() => el.classList.remove("tile-hit"), 260);
+  
+    // ----- Exit button + visibility helpers -----
+    function getExitButtons() {
+      return {
+        top: document.getElementById("end-game-top"),
+        bottom: document.getElementById("end-game-bottom"),
+      };
+    }
+    function showExitButtons() {
+      const { top, bottom } = getExitButtons();
+      if (top) top.classList.remove("is-hidden");
+      if (bottom) bottom.classList.remove("is-hidden");
+    }
+    function hideExitButtons() {
+      const { top, bottom } = getExitButtons();
+      if (top) top.classList.add("is-hidden");
+      if (bottom) bottom.classList.add("is-hidden");
     }
   
     // -------- State --------
@@ -203,6 +220,13 @@
       // Start physics loop
       startAnimLoop();
   
+      // Wire Esc + buttons to end the game
+      window.addEventListener("keydown", onKeyDownForEnd);
+      const { top: btnTop, bottom: btnBottom } = getExitButtons();
+      if (btnTop && !btnTop.__boundEnd) { btnTop.addEventListener("click", endGame); btnTop.__boundEnd = true; }
+      if (btnBottom && !btnBottom.__boundEnd) { btnBottom.addEventListener("click", endGame); btnBottom.__boundEnd = true; }
+      showExitButtons();
+  
       // If first click was on an original, start drag on its clone
       if (clickedOriginal) {
         const targetClone = state.clonesByOriginal.get(clickedOriginal);
@@ -211,38 +235,38 @@
     }
   
     function startDrag(clone, pageX, pageY) {
-        const zr = state.zone.getBoundingClientRect();
-        const zoneLeft = zr.left + window.scrollX;
-        const zoneTop  = zr.top  + window.scrollY;
-      
-        const cr = clone.getBoundingClientRect();
-        const localX = cr.left + window.scrollX - zoneLeft;
-        const localY = cr.top  + window.scrollY - zoneTop;
-      
-        const offsetX = pageX - (cr.left + window.scrollX);
-        const offsetY = pageY - (cr.top  + window.scrollY);
-      
-        state.drag = {
-          clone,
-          offsetX,
-          offsetY,
-          lastX: localX,
-          lastY: localY,
-          vx: 0,
-          vy: 0,
-          lastT: performance.now()
-        };
-      
-        // Always-on highlight while dragging
-        clone.classList.add("picked-up");
-        // keep on top of other tiles within the zone
-        clone.style.zIndex = "10001";
-      
-        document.body.classList.add("dragging-skill");
-      
-        window.addEventListener("mousemove", onMouseMove, { passive: false });
-        window.addEventListener("mouseup", onMouseUp, { once: true });
-      }
+      const zr = state.zone.getBoundingClientRect();
+      const zoneLeft = zr.left + window.scrollX;
+      const zoneTop  = zr.top  + window.scrollY;
+  
+      const cr = clone.getBoundingClientRect();
+      const localX = cr.left + window.scrollX - zoneLeft;
+      const localY = cr.top  + window.scrollY - zoneTop;
+  
+      const offsetX = pageX - (cr.left + window.scrollX);
+      const offsetY = pageY - (cr.top  + window.scrollY);
+  
+      state.drag = {
+        clone,
+        offsetX,
+        offsetY,
+        lastX: localX,
+        lastY: localY,
+        vx: 0,
+        vy: 0,
+        lastT: performance.now()
+      };
+  
+      // Always-on highlight while dragging
+      clone.classList.add("picked-up");
+      // keep on top of other tiles within the zone
+      clone.style.zIndex = "10001";
+  
+      document.body.classList.add("dragging-skill");
+  
+      window.addEventListener("mousemove", onMouseMove, { passive: false });
+      window.addEventListener("mouseup", onMouseUp,   { once: true });
+    }
   
     function onCloneMouseDown(e) {
       if (e.button !== 0) return;
@@ -288,29 +312,29 @@
     }
   
     function onMouseUp() {
-        if (!state.drag) return;
-      
-        const { clone, vx, vy } = state.drag;
-      
-        // Compute speed, apply threshold + clamps
-        const speed = Math.hypot(vx, vy);
-        if (speed >= THROW_MIN_SPEED) {
-          const sx = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vx * THROW_SCALE));
-          const sy = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vy * THROW_SCALE));
-          state.velocity.set(clone, { vx: sx, vy: sy });
-        } else {
-          // too slow — treat as a drop
-          state.velocity.set(clone, { vx: 0, vy: 0 });
-        }
-      
-        // Clear drag visuals
-        clone.classList.remove("picked-up");
-        clone.style.removeProperty("z-index");
-        document.body.classList.remove("dragging-skill");
-      
-        window.removeEventListener("mousemove", onMouseMove);
-        state.drag = null;
+      if (!state.drag) return;
+  
+      const { clone, vx, vy } = state.drag;
+  
+      // Compute speed, apply threshold + clamps
+      const speed = Math.hypot(vx, vy);
+      if (speed >= THROW_MIN_SPEED) {
+        const sx = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vx * THROW_SCALE));
+        const sy = Math.max(-THROW_MAX_SPEED, Math.min(THROW_MAX_SPEED, vy * THROW_SCALE));
+        state.velocity.set(clone, { vx: sx, vy: sy });
+      } else {
+        // too slow — treat as a drop
+        state.velocity.set(clone, { vx: 0, vy: 0 });
       }
+  
+      // Clear drag visuals (physics loop will keep glow only while dragging)
+      clone.classList.remove("picked-up");
+      clone.style.removeProperty("z-index");
+      document.body.classList.remove("dragging-skill");
+  
+      window.removeEventListener("mousemove", onMouseMove);
+      state.drag = null;
+    }
   
     // -------- Physics & collisions --------
     function startAnimLoop() {
@@ -334,93 +358,93 @@
   
     // Physics step: keeps dragged tile highlighted every frame
     function stepPhysics(dt) {
-        if (!state.built || !state.zone) return;
-    
-        // Ensure dragged tile stays visually highlighted every tick
-        if (state.drag && state.drag.clone) {
+      if (!state.built || !state.zone) return;
+  
+      // Ensure dragged tile stays visually highlighted every tick
+      if (state.drag && state.drag.clone) {
         if (!state.drag.clone.classList.contains("picked-up")) {
-            state.drag.clone.classList.add("picked-up");
+          state.drag.clone.classList.add("picked-up");
         }
         state.drag.clone.style.zIndex = "10001";
-        }
-    
-        const zr = state.zone.getBoundingClientRect();
-        const zoneW = zr.width;
-        const zoneH = zr.height;
-    
-        // Build a list of movable tiles (exclude the dragged one)
-        const movers = [];
-        state.clonesByOriginal.forEach((clone) => {
+      }
+  
+      const zr = state.zone.getBoundingClientRect();
+      const zoneW = zr.width;
+      const zoneH = zr.height;
+  
+      // Build a list of movable tiles (exclude the dragged one)
+      const movers = [];
+      state.clonesByOriginal.forEach((clone) => {
         if (state.drag && clone === state.drag.clone) return;
         const lp  = state.localPos.get(clone);
         const vel = state.velocity.get(clone);
         if (!lp || !vel) return;
         movers.push({ clone, lp, vel });
-        });
-    
-        // 1) Integrate positions + wall collisions
-        for (const m of movers) {
+      });
+  
+      // 1) Integrate positions + wall collisions
+      for (const m of movers) {
         m.lp.x += m.vel.vx * dt;
         m.lp.y += m.vel.vy * dt;
-    
+  
         // Left/Right walls
         if (m.lp.x < 0) {
-            m.lp.x = 0;
-            m.vel.vx = -m.vel.vx * BOUNCE_WALL;
-            triggerImpact(m.clone);
+          m.lp.x = 0;
+          m.vel.vx = -m.vel.vx * BOUNCE_WALL;
+          triggerImpact(m.clone);
         } else if (m.lp.x + m.lp.w > zoneW) {
-            m.lp.x = zoneW - m.lp.w;
-            m.vel.vx = -m.vel.vx * BOUNCE_WALL;
-            triggerImpact(m.clone);
+          m.lp.x = zoneW - m.lp.w;
+          m.vel.vx = -m.vel.vx * BOUNCE_WALL;
+          triggerImpact(m.clone);
         }
-    
+  
         // Top/Bottom walls
         if (m.lp.y < 0) {
-            m.lp.y = 0;
-            m.vel.vy = -m.vel.vy * BOUNCE_WALL;
-            triggerImpact(m.clone);
+          m.lp.y = 0;
+          m.vel.vy = -m.vel.vy * BOUNCE_WALL;
+          triggerImpact(m.clone);
         } else if (m.lp.y + m.lp.h > zoneH) {
-            m.lp.y = zoneH - m.lp.h;
-            m.vel.vy = -m.vel.vy * BOUNCE_WALL;
-            triggerImpact(m.clone);
+          m.lp.y = zoneH - m.lp.h;
+          m.vel.vy = -m.vel.vy * BOUNCE_WALL;
+          triggerImpact(m.clone);
         }
-        }
-    
-        // 2) Collide each mover with the dragged tile (if any)
-        if (state.drag) {
+      }
+  
+      // 2) Collide each mover with the dragged tile (if any)
+      if (state.drag) {
         const dLP = state.localPos.get(state.drag.clone);
         if (dLP) {
-            const dragRect = { x: dLP.x, y: dLP.y, w: dLP.w, h: dLP.h };
-            const dragVX = state.drag.vx, dragVY = state.drag.vy;
-    
-            for (const m of movers) {
+          const dragRect = { x: dLP.x, y: dLP.y, w: dLP.w, h: dLP.h };
+          const dragVX = state.drag.vx, dragVY = state.drag.vy;
+  
+          for (const m of movers) {
             resolveAgainstDragged(m.lp, m.vel, dragRect, dragVX, dragVY, zoneW, zoneH, m.clone);
-            }
+          }
         }
-        }
-    
-        // 3) Pairwise collisions between non-drag tiles
-        for (let i = 0; i < movers.length; i++) {
+      }
+  
+      // 3) Pairwise collisions between non-drag tiles
+      for (let i = 0; i < movers.length; i++) {
         for (let j = i + 1; j < movers.length; j++) {
-            resolvePairwise(movers[i], movers[j], zoneW, zoneH);
+          resolvePairwise(movers[i], movers[j], zoneW, zoneH);
         }
-        }
-    
-        // 4) Damping + render + persist
-        for (const m of movers) {
+      }
+  
+      // 4) Damping + render + persist
+      for (const m of movers) {
         m.vel.vx *= Math.pow(FRICTION, dt * 60);
         m.vel.vy *= Math.pow(FRICTION, dt * 60);
-    
+  
         // Clamp after corrections
         if (m.lp.x < 0) m.lp.x = 0;
         if (m.lp.y < 0) m.lp.y = 0;
         if (m.lp.x + m.lp.w > zoneW) m.lp.x = zoneW - m.lp.w;
         if (m.lp.y + m.lp.h > zoneH) m.lp.y = zoneH - m.lp.h;
-    
+  
         renderCloneAtLocalPos(m.lp.x, m.lp.y, m.clone);
         state.localPos.set(m.clone, m.lp);
         state.velocity.set(m.clone, m.vel);
-        }
+      }
     }
   
     // Push-and-bounce vs the dragged rectangle, with flash
@@ -562,6 +586,8 @@
           state.built = false;
           state.building = false;
           state.anim.running = false;
+          hideExitButtons();
+          window.removeEventListener("keydown", onKeyDownForEnd);
         }
         return;
       }
@@ -585,6 +611,60 @@
           el.__skillInitBound = true;
         }
       });
+    }
+  
+    // -------- Keyboard: Esc to end --------
+    function onKeyDownForEnd(e) {
+      if (e.key === "Escape" || e.key === "Esc") {
+        if (state.built) {
+          e.preventDefault();
+          endGame();
+        }
+      }
+    }
+  
+    // -------- End game / teardown --------
+    function endGame() {
+      // Stop animation loop
+      state.anim.running = false;
+  
+      // Remove listeners bound to zone/clones
+      if (state.zone) {
+        state.zone.removeEventListener("mousedown", onCloneMouseDown);
+        state.zone.remove(); // removes overlay + clones container
+      }
+  
+      // Unhide originals, clear maps
+      state.clonesByOriginal.forEach((clone, original) => {
+        original.classList.remove("skill-original-ghost");
+      });
+      state.clonesByOriginal.clear();
+      state.localPos = new WeakMap();
+      state.velocity = new WeakMap();
+  
+      // Clear drag state
+      if (state.drag && state.drag.clone) {
+        state.drag.clone.classList.remove("picked-up");
+        state.drag.clone.style.removeProperty("z-index");
+      }
+      state.drag = null;
+  
+      // UI/body classes
+      document.body.classList.remove("dragging-skill");
+      document.body.classList.remove("freeze-skill-layout");
+  
+      // Flags
+      state.zone = null;
+      state.built = false;
+      state.building = false;
+  
+      // Unbind global listeners
+      window.removeEventListener("mousemove", onMouseMove); // safe no-op if not set
+      // mouseup used { once: true } so no need to remove
+      window.removeEventListener("keydown", onKeyDownForEnd);
+  
+      // Hide the end-game buttons again
+      hideExitButtons();
     }
   
     // -------- Init --------
