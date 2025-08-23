@@ -19,18 +19,17 @@
     const getSectionById = (id) => document.querySelector(`section#${id}`) || null;
   
     function computeGameBounds() {
-      const projects = document.querySelector("section#projects");
-      const skills   = document.querySelector("section#skills");
-      if (!projects || !skills) return null;
-  
-      const projTop    = projects.getBoundingClientRect().top + window.scrollY;
+      const skills = document.querySelector("section#skills");
+      if (!skills) return null;
+    
       const skillsRect = skills.getBoundingClientRect();
-      const skillsBot  = skillsRect.bottom + window.scrollY;
-  
+      const top    = skillsRect.top + window.scrollY;
+      const bottom = skillsRect.bottom + window.scrollY;
+    
       return {
-        top: projTop,
-        bottom: skillsBot,
-        height: skillsBot - projTop
+        top,
+        bottom,
+        height: bottom - top
       };
     }
   
@@ -164,9 +163,7 @@
   
       const bounds = computeGameBounds();
       if (!bounds) { state.building = false; return; }
-  
-      document.body.classList.add("freeze-skill-layout");
-  
+    
       const originals = Array.from(document.querySelectorAll(".img-background-card"));
       const snaps = snapshotOriginalRects(originals);
   
@@ -194,7 +191,6 @@
   
       state.built = true;
       state.building = false;
-      document.body.classList.remove("freeze-skill-layout");
   
       startAnimLoop();
 
@@ -590,7 +586,6 @@
       state.drag = null;
   
       document.body.classList.remove("dragging-skill");
-      document.body.classList.remove("freeze-skill-layout");
   
       state.zone = null;
       state.built = false;
